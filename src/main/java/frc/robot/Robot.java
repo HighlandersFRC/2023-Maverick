@@ -39,10 +39,15 @@ import frc.robot.commands.autos.Chezy2BallSteal;
 import frc.robot.commands.autos.Chezy5BallAuto;
 import frc.robot.commands.autos.FiveBallAuto;
 import frc.robot.commands.autos.OneBallAuto;
+import frc.robot.commands.autos.OnePieceDock;
+import frc.robot.commands.autos.OutAndTurnAuto;
+import frc.robot.commands.autos.ShortLineAuto;
 import frc.robot.commands.autos.SquareDemo;
 import frc.robot.commands.autos.TestAuto;
 import frc.robot.commands.autos.ThreeBallAuto;
+import frc.robot.commands.autos.ThreePieceMav;
 import frc.robot.commands.autos.TwoBallAuto;
+import frc.robot.commands.autos.TwoBallNew;
 import frc.robot.commands.autos.TwoBallSteal;
 import frc.robot.subsystems.Carriage;
 import frc.robot.subsystems.Climber;
@@ -68,6 +73,7 @@ import java.lang.System.Logger.Level;
 import javax.swing.text.Position;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 import org.json.JSONTokener;
 
 public class Robot extends TimedRobot {
@@ -79,8 +85,19 @@ public class Robot extends TimedRobot {
 
   File pathingFile;
   String pathString;
-
   JSONArray pathJSON;
+
+  private File pathingFile2;
+  private JSONArray pathJSON2;
+  private JSONObject pathRead2;
+
+  private File pathingFile3;
+  private JSONArray pathJSON3;
+  private JSONObject pathRead3;
+
+  private File pathingFile4;
+  private JSONArray pathJSON4;
+  private JSONObject pathRead4;
 
   ContinuousAccelerationInterpolation testPath;
 
@@ -103,6 +120,16 @@ public class Robot extends TimedRobot {
 
   private MagIntake magIntake = new MagIntake(pneumatics);
 
+  private OnePieceDock onePieceDock = new OnePieceDock(drive, peripherals);
+
+  private ThreePieceMav threeBallMav = new ThreePieceMav(drive, peripherals, lights, magIntake, shooter, hood);
+
+  private TwoBallNew twoBallNew = new TwoBallNew(drive, peripherals, lights, magIntake, shooter, hood);
+
+  private OutAndTurnAuto outAndTurnAuto = new OutAndTurnAuto(drive, peripherals, magIntake, lights);
+
+  private ShortLineAuto shortLineAuto = new ShortLineAuto(drive, peripherals);
+
   private ThreeBallAuto threeBallAuto = new ThreeBallAuto(drive, magIntake, shooter, hood, peripherals, lights);
 
   private OneBallAuto oneBallAuto = new OneBallAuto(drive, magIntake, shooter, hood, peripherals, lights);
@@ -120,6 +147,7 @@ public class Robot extends TimedRobot {
   private UsbCamera cameraBack;
   private UsbCamera cameraFront;
   private VideoSink server;
+  private JSONObject pathRead;
 
   private ShotAdjuster shotAdjuster = new ShotAdjuster();
   private Button whenPressed;
@@ -129,6 +157,13 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
+    if (OI.isRedSide()) {
+      System.out.println("ON RED SIDE");
+      drive.setFieldSide("red");
+    } else if (OI.isBlueSide()) {
+      System.out.println("ON BLUE SIDE");
+      drive.setFieldSide("blue");
+    }
     cameraBack = CameraServer.startAutomaticCapture("Back Cam", "/dev/video0");
     cameraBack.setResolution(320, 240);
     cameraBack.setFPS(15);
@@ -159,74 +194,64 @@ public class Robot extends TimedRobot {
     // subscribe.subscribe(subCameraTopic);
     // m_robotContainer = new RobotContainer();
 
-    if(OI.is1BallAuto()) {
-      try {
-        pathingFile = new File("/home/lvuser/deploy/1BallAuto.json");
-        FileReader scanner = new FileReader(pathingFile);
-        pathJSON = new JSONArray(new JSONTokener(scanner));
-        // System.out.println(pathJSON);
-      }
-      catch(Exception e) {
-        // System.out.println("ERROR WITH PATH FILE " + e);
-      }
-    }
-    else if(OI.is2BallAuto()) {
-      try {
-        pathingFile = new File("/home/lvuser/deploy/2BallAuto.json");
-        FileReader scanner = new FileReader(pathingFile);
-        pathJSON = new JSONArray(new JSONTokener(scanner));
-        // System.out.println(pathJSON);
-      }
-      catch(Exception e) {
-        // System.out.println("ERROR WITH PATH FILE " + e);
-      }
-    }
-    else if(OI.is3BallAuto()) {
-      try {
-        pathingFile = new File("/home/lvuser/deploy/5BallPart1.json");
-        FileReader scanner = new FileReader(pathingFile);
-        pathJSON = new JSONArray(new JSONTokener(scanner));
-        // System.out.println(pathJSON);
-      }
-      catch(Exception e) {
-        // System.out.println("ERROR WITH PATH FILE " + e);
-      }
-    }
-    else if(OI.is5BallAuto()) {
-      try {
-        pathingFile = new File("/home/lvuser/deploy/5BallPart1.json");
-        FileReader scanner = new FileReader(pathingFile);
-        pathJSON = new JSONArray(new JSONTokener(scanner));
-        // System.out.println(pathJSON);
-      }
-      catch(Exception e) {
-        // System.out.println("ERROR WITH PATH FILE " + e);
-      }
-    }
-    else if(OI.is2BallSteal1()) {
-      try {
-        pathingFile = new File("/home/lvuser/deploy/2BallSteal1.json");
-        FileReader scanner = new FileReader(pathingFile);
-        pathJSON = new JSONArray(new JSONTokener(scanner));
-        // System.out.println(pathJSON);
-      }
-      catch(Exception e) {
-        // System.out.println("ERROR WITH PATH FILE " + e);
-      }
-    }
-    else {
-      try {
-        pathingFile = new File("/home/lvuser/deploy/5BallTogether.json");
-        FileReader scanner = new FileReader(pathingFile);
-        pathJSON = new JSONArray(new JSONTokener(scanner));
-        // System.out.println(pathJSON);
-      }
-      catch(Exception e) {
-        // System.out.println("ERROR WITH PATH FILE " + e);
-      }
-    }
 
-    // System.out.println(pathJSON);
+  //   else if(OI.is2BallAuto()) {
+  //     try {
+  //       pathingFile = new File("/home/lvuser/deploy/2BallAuto.json");
+  //       FileReader scanner = new FileReader(pathingFile);
+  //       pathJSON = new JSONArray(new JSONTokener(scanner));
+  //       // System.out.println(pathJSON);
+  //     }
+  //     catch(Exception e) {
+  //       // System.out.println("ERROR WITH PATH FILE " + e);
+  //     }
+  //   }
+  //   else if(OI.is3BallAuto()) {
+  //     try {
+  //       pathingFile = new File("/home/lvuser/deploy/5BallPart1.json");
+  //       FileReader scanner = new FileReader(pathingFile);
+  //       pathJSON = new JSONArray(new JSONTokener(scanner));
+  //       // System.out.println(pathJSON);
+  //     }
+  //     catch(Exception e) {
+  //       // System.out.println("ERROR WITH PATH FILE " + e);
+  //     }
+  //   }
+  //   else if(OI.is5BallAuto()) {
+  //     try {
+  //       pathingFile = new File("/home/lvuser/deploy/5BallPart1.json");
+  //       FileReader scanner = new FileReader(pathingFile);
+  //       pathJSON = new JSONArray(new JSONTokener(scanner));
+  //       // System.out.println(pathJSON);
+  //     }
+  //     catch(Exception e) {
+  //       // System.out.println("ERROR WITH PATH FILE " + e);
+  //     }
+  //   }
+  //   else if(OI.is2BallSteal1()) {
+  //     try {
+  //       pathingFile = new File("/home/lvuser/deploy/2BallSteal1.json");
+  //       FileReader scanner = new FileReader(pathingFile);
+  //       pathJSON = new JSONArray(new JSONTokener(scanner));
+  //       // System.out.println(pathJSON);
+  //     }
+  //     catch(Exception e) {
+  //       // System.out.println("ERROR WITH PATH FILE " + e);
+  //     }
+  //   }
+  //   else {
+  //     try {
+  //       pathingFile = new File("/home/lvuser/deploy/5BallTogether.json");
+  //       FileReader scanner = new FileReader(pathingFile);
+  //       pathJSON = new JSONArray(new JSONTokener(scanner));
+  //       // System.out.println(pathJSON);
+  //     }
+  //     catch(Exception e) {
+  //       // System.out.println("ERROR WITH PATH FILE " + e);
+  //     }
+  //   }
+
+  //   // System.out.println(pathJSON);
     drive.init();
     carriage.init();
   }
@@ -234,33 +259,35 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     lights.periodic();
-    SmartDashboard.putNumber("Lime Light X", peripherals.getLimeLightX());
-    SmartDashboard.putNumber("Lime Light Y", peripherals.getLimeLightY());
+    // SmartDashboard.putNumber("Lime Light X", peripherals.getLimeLightX());
+    // SmartDashboard.putNumber("Lime Light Y", peripherals.getLimeLightY());
+    SmartDashboard.putNumber("Navx Roll Offset", peripherals.getNavxRollOffset());
+    SmartDashboard.putNumber("Navx Roll", peripherals.getNavxRoll());
     CommandScheduler.getInstance().run();
 
-    SmartDashboard.putBoolean("LIMIT SWITCH", hood.getLowerLimitSwitch());
-    SmartDashboard.putNumber("RPM", shooter.getShooterRPM());
-    SmartDashboard.putNumber("HOOD", hood.getHoodPosition());
-    SmartDashboard.putNumber("RPM ADJUSTMENT", shotAdjuster.getRPMAdjustment());
-    SmartDashboard.putNumber("HOOD ADJUSTMENT", shotAdjuster.getHoodAdjustment());
+    // SmartDashboard.putBoolean("LIMIT SWITCH", hood.getLowerLimitSwitch());
+    // SmartDashboard.putNumber("RPM", shooter.getShooterRPM());
+    // SmartDashboard.putNumber("HOOD", hood.getHoodPosition());
+    // SmartDashboard.putNumber("RPM ADJUSTMENT", shotAdjuster.getRPMAdjustment());
+    // SmartDashboard.putNumber("HOOD ADJUSTMENT", shotAdjuster.getHoodAdjustment());
 
-    SmartDashboard.putBoolean("BOTTOM BEAM BREAK", magIntake.getLowerBackBeamBreak());
-    SmartDashboard.putBoolean("UPPER BEAM BREAK", magIntake.getUpperBeamBreak());
+    // SmartDashboard.putBoolean("BOTTOM BEAM BREAK", magIntake.getLowerBackBeamBreak());
+    // SmartDashboard.putBoolean("UPPER BEAM BREAK", magIntake.getUpperBeamBreak());
 
-    SmartDashboard.putNumber("DISTANCE", peripherals.getLimeLightDistanceToTarget());
+    // SmartDashboard.putNumber("DISTANCE", peripherals.getLimeLightDistanceToTarget());
 
-    // climber.postRotatingClimberEncoder();
+    // // climber.postRotatingClimberEncoder();
 
-    SmartDashboard.putNumber("VClimber", carriage.getclimberFalcon1Position());
-    SmartDashboard.putNumber("RCLIMBER", climber.getRotatingMotorPosition());
+    // SmartDashboard.putNumber("VClimber", carriage.getclimberFalcon1Position());
+    // SmartDashboard.putNumber("RCLIMBER", climber.getRotatingMotorPosition());
 
-    SmartDashboard.putBoolean("CLIMB LIMIT SWITCH", climber.getLimitSwitch());
-    SmartDashboard.putNumber("ROLL", peripherals.getNavxPitch());
+    // SmartDashboard.putBoolean("CLIMB LIMIT SWITCH", climber.getLimitSwitch());
+    // SmartDashboard.putNumber("ROLL", peripherals.getNavxPitch());
 
-    SmartDashboard.putNumber("ROTATING TEMPERATURE", climber.getRotatingMotorTemperature());
+    // SmartDashboard.putNumber("ROTATING TEMPERATURE", climber.getRotatingMotorTemperature());
 
     magIntake.postGreenWheelVelocity();
-    }
+  }
   
 
   /** This function is called once each time the robot enters Disabled mode. */
@@ -289,28 +316,113 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
+    if(OI.isShortLineAuto()) {
+      try {
+        pathingFile = new File("/home/lvuser/deploy/shortlinetest.json");
+        FileReader scanner = new FileReader(pathingFile);
+        pathRead = new JSONObject(new JSONTokener(scanner));
+        pathJSON = (JSONArray) pathRead.get("sampled_points");
+        System.out.println(pathJSON);
+        // System.out.println("it worked\n it json path is " + pathJSON + "\n.");
+      }
+      catch(Exception e) {
+        System.out.println("ERROR WITH PATH FILE " + e);
+        System.out.println("task was failed\n json path failed with exception: " + e + "\nthats too bad");
+      }
+    } else if (OI.isOutAndTurnAuto()) {
+      try {
+        pathingFile = new File("/home/lvuser/deploy/OutAndTurn.json");
+        FileReader scanner = new FileReader(pathingFile);
+        pathRead = new JSONObject(new JSONTokener(scanner));
+        pathJSON = (JSONArray) pathRead.get("sampled_points");
+        System.out.println(pathJSON);
+        // System.out.println("it worked\n it json path is " + pathJSON + "\n.");
+      }
+      catch(Exception e) {
+        System.out.println("ERROR WITH PATH FILE " + e);
+        System.out.println("task was failed\n json path failed with exception: " + e + "\nthats too bad");
+      }
+    } else if(OI.isTwoBallNew()) {
+      try {
+        pathingFile = new File("/home/lvuser/deploy/2BallPart1.json");
+        FileReader scanner = new FileReader(pathingFile);
+        pathRead = new JSONObject(new JSONTokener(scanner));
+        pathJSON = (JSONArray) pathRead.get("sampled_points");
+        System.out.println(pathJSON);
+        // System.out.println("it worked\n it json path is " + pathJSON + "\n.");
+      }
+      catch(Exception e) {
+        System.out.println("ERROR WITH PATH FILE " + e);
+        System.out.println("task was failed\n json path failed with exception: " + e + "\nthats too bad");
+      }
+      try {
+        pathingFile2 = new File("/home/lvuser/deploy/2BallPart2.json");
+        FileReader scanner2 = new FileReader(pathingFile2);
+        pathRead2 = new JSONObject(new JSONTokener(scanner2));
+        pathJSON2 = (JSONArray) pathRead2.get("sampled_points");
+      }
+      catch(Exception e) {
+        System.out.println("ERROR WITH PATH FILE " + e);
+      }
+    } else if (OI.is3BallMav()) {
+      try {
+        pathingFile = new File("/home/lvuser/deploy/3PieceMav1.json");
+        FileReader scanner = new FileReader(pathingFile);
+        pathRead = new JSONObject(new JSONTokener(scanner));
+        pathJSON = (JSONArray) pathRead.get("sampled_points");
+      }
+      catch(Exception e) {
+        System.out.println("ERROR WITH PATH FILE " + e);
+      }
+  
+      try {
+        pathingFile2 = new File("/home/lvuser/deploy/3PieceMav2.json");
+        FileReader scanner2 = new FileReader(pathingFile2);
+        pathRead2 = new JSONObject(new JSONTokener(scanner2));
+        pathJSON2 = (JSONArray) pathRead2.get("sampled_points");
+      }
+      catch(Exception e) {
+        System.out.println("ERROR WITH PATH FILE " + e);
+      }
+  
+      try {
+        pathingFile3 = new File("/home/lvuser/deploy/3PieceMav3.json");
+        FileReader scanner3 = new FileReader(pathingFile3);
+        pathRead3 = new JSONObject(new JSONTokener(scanner3));
+        pathJSON3 = (JSONArray) pathRead3.get("sampled_points");
+      }
+      catch(Exception e) {
+        System.out.println("ERROR WITH PATH FILE " + e);
+      }
+      
+      try {
+        pathingFile4 = new File("/home/lvuser/deploy/3PieceMav4.json");
+        FileReader scanner4 = new FileReader(pathingFile4);
+        pathRead4 = new JSONObject(new JSONTokener(scanner4));
+        pathJSON4 = (JSONArray) pathRead4.get("sampled_points");
+      }
+      catch(Exception e) {
+        System.out.println("ERROR WITH PATH FILE " + e);
+      }
+    }
+
     // System.out.println(pathJSON);
+    if(!OI.is1PieceDock()) {
     drive.autoInit(pathJSON);
+    }
     // peripherals.init();
     // testPath = new ContinuousAccelerationInterpolation(drive, pathJSON);
     // testPath.schedule();
-    if(OI.is3BallAuto()) {
-      threeBallAuto.schedule();
-    }
-    else if(OI.is1BallAuto()) {
-      oneBallAuto.schedule();
-    }
-    else if(OI.is2BallAuto()) {
-      twoBallAuto.schedule();
-    }
-    else if(OI.is5BallAuto()) {
-      fiveBallAuto.schedule();
-    }
-    else if(OI.is2BallSteal1()) {
-      twoBallSteal1.schedule();
-    }
-    else {
-      squareDemo.schedule();
+    if(OI.isShortLineAuto()) {
+      shortLineAuto.schedule();
+    } else if(OI.isOutAndTurnAuto()) {
+      outAndTurnAuto.schedule();
+    } else if (OI.isTwoBallNew()) {
+      twoBallNew.schedule();
+    } else if (OI.is3BallMav()) {
+      threeBallMav.schedule();
+    } else if (OI.is1PieceDock()) {
+      onePieceDock.schedule();
     }
   }
 

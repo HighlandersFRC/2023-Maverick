@@ -131,6 +131,13 @@ public class SwerveModule extends SubsystemBase {
         return new SwerveModuleState((ticsPer100MSToSpeed(driveMotor.getSelectedSensorVelocity())), new Rotation2d(Math.toRadians(getAbsolutePosition() - navxOffset)));
     }
 
+    public double getModuleDistance() {
+        double currentTics = driveMotor.getSelectedSensorPosition();
+        // because current tics is just the current encoder position rather than tics/second, calling the ticsPerSecondToSpeed method will return a distance rather than a speed
+        double distance = ticsPerSecondToSpeed(currentTics);
+        return distance;
+    }
+
     // method run when robot boots up, sets up Current Limits, and Frame Periods to limit CAN usage, as well as tells internal encoder where it actually is
     public void init() {
         angleMotor.configFactoryDefault();

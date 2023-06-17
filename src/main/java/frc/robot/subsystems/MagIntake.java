@@ -120,8 +120,8 @@ public class MagIntake extends SubsystemBase {
     return Constants.unitsPer100MsToRPM(backMagazine.getSelectedSensorVelocity());
   }
 
-  private final DigitalInput lowerBackBeamBreak = new DigitalInput(0);
-  private final DigitalInput upperBeamBreak = new DigitalInput(1);
+  private final DigitalInput lowerBackBeamBreak = new DigitalInput(1);
+  private final DigitalInput upperBeamBreak = new DigitalInput(0);
 
   public Boolean getLowerBackBeamBreak() {
       return lowerBackBeamBreak.get();
@@ -129,6 +129,11 @@ public class MagIntake extends SubsystemBase {
 
   public Boolean getUpperBeamBreak() {
       return upperBeamBreak.get();
+  }
+
+  public void stopMagazine() {
+    backMagazine.set(ControlMode.PercentOutput, 0.0);
+    frontMagazine.set(ControlMode.PercentOutput, 0.0);
   }
 
   public void moveMagazine() {  

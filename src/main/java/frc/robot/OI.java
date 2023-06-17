@@ -75,24 +75,52 @@ public class OI {
         return driverController.getAButton();
     }
 
-    public static Boolean is1BallAuto() {
+    public static boolean isShortLineAuto() {
         return autoChooser.getRawButton(1);
     }
 
-    public static Boolean is2BallAuto() {
-        return autoChooser.getRawButton(6);
-    }
-
-    public static Boolean is3BallAuto() {
+    public static boolean isOutAndTurnAuto() {
         return autoChooser.getRawButton(2);
     }
 
-    public static Boolean is5BallAuto() {
-        return autoChooser.getRawButton(8);
+    public static boolean isTwoBallNew() {
+        return autoChooser.getRawButton(3);
     }
 
-    public static Boolean is2BallSteal1() {
-        return autoChooser.getRawButton(7);
+    public static boolean is3BallMav() {
+        return autoChooser.getRawButton(4);
+    }
+
+    public static boolean is1PieceDock() {
+        return true;
+    }
+
+    // public static Boolean is1BallAuto() {
+    //     return autoChooser.getRawButton(1);
+    // }
+
+    // public static Boolean is2BallAuto() {
+    //     return autoChooser.getRawButton(6);
+    // }
+
+    // public static Boolean is3BallAuto() {
+    //     return autoChooser.getRawButton(2);
+    // }
+
+    // public static Boolean is5BallAuto() {
+    //     return autoChooser.getRawButton(8);
+    // }
+
+    // public static Boolean is2BallSteal1() {
+    //     return autoChooser.getRawButton(7);
+    // }
+
+    public static boolean isRedSide() {
+        return autoChooser.getRawButton(6);
+    }
+
+    public static boolean isBlueSide() {
+        return autoChooser.getRawButton(8);
     }
 
     public static int getPOV() {

@@ -16,6 +16,32 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  */
 public final class Constants {
 
+    public static final double FIELD_WIDTH = 8.2;
+
+    public static final double FIELD_LENGTH = 16.63;
+
+    public static final double[][] TAG_LOCATIONS = new double[][] {
+        {15.513558, 1.071626, 0.462788},
+        {15.513558, 2.748026, 0.462788},
+        {15.513558, 4.424426, 0.462788},
+        {16.178784, 6.749796, 0.695452},
+        {0.36195, 6.749796, 0.695452},
+        {1.02743, 4.4224426, 0.462788},
+        {1.02743, 2.748026, 0.462788},
+        {1.02743, 1.071626, 0.462788},
+    };
+
+    public static final double PLACEMENT_LOCATION_X_RED = 14.75;
+    public static final double PLACEMENT_LOCATION_X_BLUE = FIELD_LENGTH - PLACEMENT_LOCATION_X_RED;
+    public static final double[] PLACEMENT_LOCATIONS_Y_RED = new double[] {0.52, 1.07, 1.62, 2.2, 2.74, 3.3, 3.85, 4.43, 4.98};
+    public static final double[] PLACEMENT_LOCATIONS_Y_BLUE = new double[] {4.98, 4.43, 3.85, 3.3, 2.74, 2.2, 1.07, 0.52};
+
+    public static final double PLACEMENT_PATH_MIDPOINT_X_RED = 14.41;
+    public static final double PLACEMENT_PATH_MIDPOINT_X_BLUE = FIELD_LENGTH - PLACEMENT_PATH_MIDPOINT_X_RED;
+    public static final double[] PLACEMENT_PATH_MIDPOINT_Y_RED = new double[] {0.52, 1.07, 1.62, 2.2, 2.74, 3.3, 3.85, 4.43, 4.98};
+    public static final double[] PLACEMENT_PATH_MIDPOINT_Y_BLUE = new double[] {4.98, 4.43, 3.85, 3.3, 2.74, 2.2, 1.07, 0.52};
+
+
     public static final double ROBOT_RADIUS = inchesToMeters(16); //m
 
     public static final double WHEEL_DIAMETER = inchesToMeters(4); //m

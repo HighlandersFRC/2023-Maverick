@@ -48,6 +48,20 @@ public class Peripherals extends SubsystemBase {
   //  this.mqttSubscribe = mqttSubscribe;
    this.lights = lights;
   }
+  private double navxStartingRoll = 0;
+
+  public double getNavxRollOffset() {
+    if(navxStartingRoll == 0) {
+      navxStartingRoll = getNavxRoll();
+      if(navxStartingRoll == 0) {
+        navxStartingRoll = 0.0001;
+      }
+      return navxStartingRoll;
+    } else {
+      double offset = getNavxRoll() - navxStartingRoll;
+      return offset;
+    }
+  }
 
   public void init() {
     System.out.print("INSIDE PERIPHERALS INIT");
@@ -110,7 +124,11 @@ public class Peripherals extends SubsystemBase {
     navx.softResetYaw();
     navx.softResetPitch();
     // navx.softResetAngle();
-}
+  }
+
+  public void zeroNavxRoll() {
+    navx.softResetAngle();
+  }
 
   public double getNavxYaw(){
     return navx.currentYaw();
