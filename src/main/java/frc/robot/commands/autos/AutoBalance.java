@@ -1,32 +1,34 @@
 package frc.robot.commands.autos;
 
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.tools.controlloops.PID;
 import frc.robot.tools.math.Vector;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Peripherals;
 
-public class DriveBackOnChargeStation extends CommandBase {
+
+public class AutoBalance extends CommandBase {
+
   private Peripherals peripherals;
   private Drive drive;
   private PID pid;
-  private boolean checkpoint = false;
-  private double startTimeOnStation = 0;
-  private boolean balanced = false;
   private double kP = 0.2;
   private double kI = 0;
   private double kD = 0.01;
   private double set;
   private double setPoint;
   private double turn;
-
-  Vector driveVector = new Vector(-1.75, 0);
-  Vector balanceVector = new Vector(-0.4, 0.0);
+  private double direction = 0;
+  private boolean balanced = true;
+  private double timer;
+  private boolean timerStarted = false;
+  Vector closerBalanceVector = new Vector(-0.25, 0.0);
+  Vector fartherBalanceVector = new Vector(0.25, 0.0);
   Vector stopVector = new Vector(0.0, 0.0);
-
-  public DriveBackOnChargeStation(Drive drive, Peripherals peripherals) {
+  Vector balanceVector;
+  public AutoBalance(Drive drive, Peripherals peripherals) {
     this.drive = drive;
     this.peripherals = peripherals;
     this.pid = pid;
@@ -35,7 +37,7 @@ public class DriveBackOnChargeStation extends CommandBase {
 
   @Override
   public void initialize() {
-    drive.autoRobotCentricDrive(driveVector, 0);
+    drive.autoRobotCentricDrive(stopVector, 0);
     pid = new PID(kP, kI, kD);
     setPoint = 0;
     set = setPoint;
@@ -52,23 +54,32 @@ public class DriveBackOnChargeStation extends CommandBase {
     if(Math.abs(turn - set) < 2) { 
       result = 0;
     }
-    drive.autoRobotCentricDrive(driveVector, result);
-    SmartDashboard.putBoolean("checkpoint 2", checkpoint);
-    if(this.peripherals != null) {
-      if(peripherals.getNavxRollOffset() < -10 && !checkpoint) {
-        checkpoint = true;
-        startTimeOnStation = Timer.getFPGATimestamp();
-      }
 
-      if(checkpoint && Timer.getFPGATimestamp() - startTimeOnStation > 0.8) {
-        drive.autoRobotCentricDrive(balanceVector, 0);
-      }
-
-      if(checkpoint && peripherals.getNavxRollOffset() > -10 && !balanced) {
-        balanced = true;
-      }
-
+    if(peripherals.getNavxRollOffset() < -5) {
+      balanceVector = closerBalanceVector;
+      balanced = false;
+    } else if(peripherals.getNavxRollOffset() > 5) {
+      balanceVector = fartherBalanceVector;
+      balanced = false;
+    } else {
+      balanceVector = stopVector;
+      balanced = true;
+      timerStarted = false;
     }
+
+    if(peripherals.getNavxRollOffset() > -7 && peripherals.getNavxRollOffset() < 7) {
+      if(!timerStarted) {
+        timer = Timer.getFPGATimestamp();
+        timerStarted = true;
+      }
+    }
+
+    if(timerStarted && Timer.getFPGATimestamp() - timer < 1) {
+      balanceVector = stopVector;
+    }
+
+
+    drive.autoRobotCentricDrive(balanceVector, result);
   }
 
   @Override
@@ -78,6 +89,6 @@ public class DriveBackOnChargeStation extends CommandBase {
 
   @Override
   public boolean isFinished() {
-    return balanced;
+    return false;
   }
 }

@@ -1,5 +1,6 @@
 package frc.robot.commands.autos;
 
+import frc.robot.tools.controlloops.PID;
 import frc.robot.tools.math.Vector;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -10,27 +11,48 @@ import frc.robot.subsystems.Peripherals;
 public class DriveOverChargeStation extends CommandBase {
   private Peripherals peripherals;
   private Drive drive;
+  private PID pid;
   private boolean pastStation = false;
   private boolean checkpoint = false;
   private boolean exitingStation = false;
   private double timePastStation = 0;
+  private double kP = 0.2;
+  private double kI = 0;
+  private double kD = 0.01;
+  private double set;
+  private double setPoint;
+  private double turn;
 
-  Vector driveVector = new Vector(2, 0);
+  Vector driveVector = new Vector(2.1, 0);
   Vector stopVector = new Vector(0.0, 0.0);
 
   public DriveOverChargeStation(Drive drive, Peripherals peripherals) {
     this.drive = drive;
     this.peripherals = peripherals;
+    this.pid = pid;
     addRequirements(this.drive);
   }
 
   @Override
   public void initialize() {
     drive.autoRobotCentricDrive(driveVector, 0);
+    pid = new PID(kP, kI, kD);
+    setPoint = 0;
+    set = setPoint;
+    pid.setSetPoint(setPoint);
+    pid.setMinOutput(-1);
+    pid.setMaxOutput(1);
   }
 
   @Override
   public void execute() {
+    turn = peripherals.getNavxAngle();
+    pid.updatePID(turn);
+    double result = pid.getResult();
+    if(Math.abs(turn - set) < 2) { 
+      result = 0;
+    }
+    drive.autoRobotCentricDrive(driveVector, result);
     SmartDashboard.putBoolean("checkpoint", checkpoint);
     SmartDashboard.putBoolean("pastStation", pastStation);
     SmartDashboard.putNumber("timePastStation", timePastStation);

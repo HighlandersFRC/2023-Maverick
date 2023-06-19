@@ -35,6 +35,7 @@ import frc.robot.commands.RunRotatingClimber;
 import frc.robot.commands.RunVerticalClimber;
 import frc.robot.commands.TurnDriveTrain;
 import frc.robot.commands.ZeroNavxMidMatch;
+import frc.robot.commands.autos.AutoBalance;
 import frc.robot.commands.autos.Chezy2BallSteal;
 import frc.robot.commands.autos.Chezy5BallAuto;
 import frc.robot.commands.autos.FiveBallAuto;
@@ -261,6 +262,7 @@ public class Robot extends TimedRobot {
     lights.periodic();
     // SmartDashboard.putNumber("Lime Light X", peripherals.getLimeLightX());
     // SmartDashboard.putNumber("Lime Light Y", peripherals.getLimeLightY());
+    SmartDashboard.putNumber("Navx angle", peripherals.getNavxAngle());
     SmartDashboard.putNumber("Navx Roll Offset", peripherals.getNavxRollOffset());
     SmartDashboard.putNumber("Navx Roll", peripherals.getNavxRoll());
     CommandScheduler.getInstance().run();
@@ -461,7 +463,7 @@ public class Robot extends TimedRobot {
     OI.driverX.whenHeld(new FireBallsNoVision(drive, magIntake, shooter, hood, peripherals, lights, 30, 1650, 0.75, 0.75, shotAdjuster));
 
     OI.driverRB.whenHeld(new HubCentricAutoRanging(drive, hood, shooter, shotAdjuster, peripherals));
-
+    OI.driverLB.whileTrue(new AutoBalance(drive, peripherals));
     OI.driverViewButton.whileHeld(new ZeroNavxMidMatch(drive));
 
     OI.operatorA.whenPressed(new LoadedRobotClimb(carriage, 0));

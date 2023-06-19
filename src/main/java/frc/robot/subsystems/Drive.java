@@ -857,18 +857,13 @@ public class Drive extends SubsystemBase {
 
     }
 
-    // NOT WORKING method to accepts controller input of which way to drive but stay aligned to the target
-    public void driveAutoAligned(double cameraTurnAdjustment) {
+    public void driveAutoAligned(double degreesFromPlacement) {
         updateOdometryFusedArray();
 
-        double turn = (-OI.getDriverRightX() * (Constants.TOP_SPEED)/(Constants.ROBOT_RADIUS));
+        double turnRadiansPerSec = degreesFromPlacement;
 
-        // double cameraTurnAdjustment = -peripherals.getLimeLightX();
-
-        double turnRadiansPerSec = turn + cameraTurnAdjustment;
-
-        double originalX = -OI.getDriverLeftY();
-        double originalY = -OI.getDriverLeftX();
+        double originalX = -(Math.copySign(OI.getDriverLeftY() * OI.getDriverLeftY(), OI.getDriverLeftY()));
+        double originalY = -(Math.copySign(OI.getDriverLeftX() * OI.getDriverLeftX(), OI.getDriverLeftX()));
 
         if(Math.abs(originalX) < 0.05) {
             originalX = 0;

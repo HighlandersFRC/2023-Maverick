@@ -34,6 +34,7 @@ public class OI {
     public static TriggerButton driverRT = new TriggerButton(rtSupplier);
     public static TriggerButton driverLT = new TriggerButton(ltSupplier);
     public static JoystickButton driverRB = new JoystickButton(driverController, 6);
+    public static JoystickButton driverLB = new JoystickButton(driverController, 5);
 
     public static JoystickButton operatorX = new JoystickButton(operatorController, 3);
     public static JoystickButton operatorB = new JoystickButton(operatorController, 2);

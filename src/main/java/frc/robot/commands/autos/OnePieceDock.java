@@ -39,8 +39,9 @@ public class OnePieceDock extends SequentialCommandGroup {
     addRequirements(drive);
     addCommands(
         new DriveOverChargeStation(drive, peripherals),
-        new WaitCommand(2),
-        new DriveBackOnChargeStation(drive, peripherals)
+        new WaitCommand(0.58),
+        new DriveBackOnChargeStation(drive, peripherals),
+        new AutoBalance(drive, peripherals)
     );
   }
 }
