@@ -25,6 +25,7 @@ import frc.robot.commands.IntakeBalls;
 import frc.robot.commands.LoadedRobotClimb;
 import frc.robot.commands.LockDriveWheels;
 import frc.robot.commands.Outtake;
+import frc.robot.commands.PositionClimberSecondBar;
 import frc.robot.commands.PositionRotatingClimber;
 import frc.robot.commands.PositionVerticalClimber;
 import frc.robot.commands.ResetAutoOdometry;
@@ -76,8 +77,12 @@ import javax.swing.text.Position;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
+import org.littletonrobotics.junction.LoggedRobot;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.NT4Publisher;
+import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
-public class Robot extends TimedRobot {
+public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;
   File f;
   BufferedWriter bw;
@@ -152,6 +157,8 @@ public class Robot extends TimedRobot {
 
   private ShotAdjuster shotAdjuster = new ShotAdjuster();
   private Button whenPressed;
+
+  private Logger log = Logger.getInstance();
   /**
    * This function is run when the robot is first started up and should be used
    * for any initialization code.
@@ -253,6 +260,11 @@ public class Robot extends TimedRobot {
   //   }
 
   //   // System.out.println(pathJSON);
+    // log.recordMetadata("Project Name", "2023-Maverick");
+    log.addDataReceiver(new WPILOGWriter("/home/lvuser/logs/Most_Recent.wpilog")); // Log to logs folder on the robot
+    log.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
+    log.start();
+
     drive.init();
     carriage.init();
   }
@@ -266,7 +278,9 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Navx Roll Offset", peripherals.getNavxRollOffset());
     SmartDashboard.putNumber("Navx Roll", peripherals.getNavxRoll());
     CommandScheduler.getInstance().run();
-
+    log.recordOutput("Climber Setpoint", Constants.getClimberFalconTics(carriage.getClimberFalcon1Setpoint()));
+    log.recordOutput("Climber Error", Constants.getClimberFalconTics(carriage.getClimberFalcon1Error()));
+    log.recordOutput("Climber Position", Constants.getClimberFalconTics(carriage.getclimberFalcon1Position()));
     // SmartDashboard.putBoolean("LIMIT SWITCH", hood.getLowerLimitSwitch());
     // SmartDashboard.putNumber("RPM", shooter.getShooterRPM());
     // SmartDashboard.putNumber("HOOD", hood.getHoodPosition());
@@ -324,7 +338,7 @@ public class Robot extends TimedRobot {
         FileReader scanner = new FileReader(pathingFile);
         pathRead = new JSONObject(new JSONTokener(scanner));
         pathJSON = (JSONArray) pathRead.get("sampled_points");
-        System.out.println(pathJSON);
+        //System.out.println(pathJSON);
         // System.out.println("it worked\n it json path is " + pathJSON + "\n.");
       }
       catch(Exception e) {
@@ -337,7 +351,7 @@ public class Robot extends TimedRobot {
         FileReader scanner = new FileReader(pathingFile);
         pathRead = new JSONObject(new JSONTokener(scanner));
         pathJSON = (JSONArray) pathRead.get("sampled_points");
-        System.out.println(pathJSON);
+        //System.out.println(pathJSON);
         // System.out.println("it worked\n it json path is " + pathJSON + "\n.");
       }
       catch(Exception e) {
@@ -350,7 +364,7 @@ public class Robot extends TimedRobot {
         FileReader scanner = new FileReader(pathingFile);
         pathRead = new JSONObject(new JSONTokener(scanner));
         pathJSON = (JSONArray) pathRead.get("sampled_points");
-        System.out.println(pathJSON);
+        //System.out.println(pathJSON);
         // System.out.println("it worked\n it json path is " + pathJSON + "\n.");
       }
       catch(Exception e) {
@@ -466,8 +480,8 @@ public class Robot extends TimedRobot {
     OI.driverLB.whileTrue(new AutoBalance(drive, peripherals));
     OI.driverViewButton.whileHeld(new ZeroNavxMidMatch(drive));
 
-    OI.operatorA.whenPressed(new LoadedRobotClimb(carriage, 0));
-    OI.operatorY.whenPressed(new PositionVerticalClimber(carriage, climber, 21));
+    OI.operatorA.whenPressed(new LoadedRobotClimb(carriage, climber, 0));
+    OI.operatorY.whenPressed(new PositionClimberSecondBar(climber, carriage));
     OI.operatorX.whenPressed(new ClimbSequence(climber, carriage));
     OI.operatorB.whenPressed(new HoldRotatingArmOnBar(climber, 30, peripherals));
 

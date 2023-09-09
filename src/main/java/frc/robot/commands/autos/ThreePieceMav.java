@@ -57,7 +57,7 @@ public class ThreePieceMav extends SequentialCommandGroup {
       FileReader scanner = new FileReader(pathingFile);
       pathRead = new JSONObject(new JSONTokener(scanner));
       pathJSON = (JSONArray) pathRead.get("sampled_points");
-      System.out.println(pathJSON);
+      // System.out.println(pathJSON);
     }
     catch(Exception e) {
       System.out.println("ERROR WITH PATH FILE " + e);

@@ -14,6 +14,7 @@ import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import org.ejml.dense.block.decomposition.chol.InnerCholesky_DDRB;
+import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -24,7 +25,7 @@ import frc.robot.tools.PneumaticsControl;
 
 public class Carriage extends SubsystemBase {
   /** Creates a new Carriage. */
-
+  private Logger log = Logger.getInstance();
   private final TalonFX climberFalcon1 = new TalonFX(20);
   private final TalonFX climberFalcon2 = new TalonFX(21);
   // private final CANSparkMax rotatingMotor = new CANSparkMax(22, MotorType.kBrushless);
@@ -64,6 +65,13 @@ public class Carriage extends SubsystemBase {
     climberFalcon1.config_kI(1, 0);
     climberFalcon1.config_kD(1, 0);
 
+    climberFalcon1.config_kF(2, 0);
+    climberFalcon1.config_kP(2, 0.015);
+    climberFalcon1.config_kI(2, 0);
+    climberFalcon1.config_kD(2, 0.1);
+    climberFalcon1.configMotionCruiseVelocity(50000);
+    climberFalcon1.configMotionAcceleration(150000);
+
     // climberFalcon1.configAllowableClosedloopError(0, Constants.getClimberFalconTics(0.1), 10);
     climberFalcon1.configForwardSoftLimitEnable(false);
     climberFalcon1.configReverseSoftLimitEnable(false);
@@ -94,6 +102,20 @@ public class Carriage extends SubsystemBase {
 
   public double getclimberFalcon1Position() {
     return Constants.getVerticalClimberInches(climberFalcon1.getSelectedSensorPosition());
+  }
+
+  public double getClimberFalcon1Setpoint(){
+    return Constants.getVerticalClimberInches(climberFalcon1.getClosedLoopTarget());
+  }
+  
+  public double getClimberFalcon1Error(){
+    return Constants.getVerticalClimberInches(climberFalcon1.getClosedLoopError());
+  }
+
+  public void setClimberFalconsMagic(double inches){
+    double ticks = Constants.getClimberFalconTics(inches);
+    climberFalcon1.selectProfileSlot(2, 0);
+    climberFalcon1.set(ControlMode.MotionMagic, ticks);
   }
 
   public void setClimberFalconsPosition(double inches) {

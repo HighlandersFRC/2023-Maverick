@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.fasterxml.jackson.databind.node.BooleanNode;
@@ -24,6 +26,7 @@ public class Climber extends SubsystemBase {
   private final CANSparkMax rotatingMotor = new CANSparkMax(22, MotorType.kBrushless);
   private double maxPos = Constants.getClimberFalconTics(30);
   private PneumaticsControl pneumatics;
+  private Logger log = Logger.getInstance();
 
   public Climber(PneumaticsControl pneumaticsControl) {
     this.pneumatics = pneumaticsControl;
@@ -31,13 +34,22 @@ public class Climber extends SubsystemBase {
 
   public void init() {
     setDefaultCommand(new ClimberDefault(this));
-
+    rotatingMotor.restoreFactoryDefaults();
     rotatingMotor.getEncoder().setPosition(0);
-    rotatingMotor.setSmartCurrentLimit(15, 20);
+    rotatingMotor.setSmartCurrentLimit(13, 15);
 
-    rotatingMotor.getPIDController().setP(0.1);
-    rotatingMotor.getPIDController().setI(0);
-    rotatingMotor.getPIDController().setD(0.1);
+    rotatingMotor.getPIDController().setP(0.05, 0);
+    rotatingMotor.getPIDController().setI(0, 0);
+    rotatingMotor.getPIDController().setD(0.1, 0);
+
+    rotatingMotor.getPIDController().setP(0.0001, 1);
+    rotatingMotor.getPIDController().setI(0,1 );
+    rotatingMotor.getPIDController().setD(0.1, 1);
+    rotatingMotor.getPIDController().setFF(0, 1);
+    rotatingMotor.getPIDController().setSmartMotionMaxAccel(1500, 1);
+    rotatingMotor.getPIDController().setSmartMotionMaxVelocity(3000, 1);
+
+    // rotatingMotor.getPIDController().setSmartMotionMinOutputVelocity(100, 1);
 
     // rotatingMotor.getEncoder().setPosition(0);
 
@@ -59,6 +71,11 @@ public class Climber extends SubsystemBase {
   public void setRotatingMotorPosition(double degrees) {
     double tics = Constants.getNeoTics(degrees);
     rotatingMotor.getPIDController().setReference(tics, ControlType.kPosition);
+  }
+
+    public void setRotatingMotorMagic(double degrees) {
+    double ticks = Constants.getNeoTics(degrees);
+    rotatingMotor.getPIDController().setReference(ticks, ControlType.kSmartMotion, 1);
   }
 
   public void setRotatingMotorPercent(double percent) {

@@ -9,12 +9,14 @@ import frc.robot.subsystems.Carriage;
 import frc.robot.subsystems.Climber;
 
 public class LoadedRobotClimb extends CommandBase {
-  private Carriage climber;
+  private Carriage carriage;
+  private Climber climber;
   private double inches;
-  public LoadedRobotClimb(Carriage climber, double inches) {
+  public LoadedRobotClimb(Carriage carriage, Climber climber, double inches) {
     this.climber = climber;
+    this.carriage = carriage;
     this.inches = inches;
-    addRequirements(climber);
+    addRequirements(climber, carriage);
   }
 
   @Override
@@ -24,7 +26,8 @@ public class LoadedRobotClimb extends CommandBase {
   @Override
   public void execute() {
     // climber.setClimberPercents(-1);
-    climber.loadedRobotClimb(inches);
+    carriage.setClimberFalconsMagic(inches);
+    climber.setRotatingMotorMagic(0);
   }
 
   @Override
@@ -32,7 +35,7 @@ public class LoadedRobotClimb extends CommandBase {
 
   @Override
   public boolean isFinished() {
-    if(Math.abs(climber.getclimberFalcon1Position() - inches) < 1) {
+    if(Math.abs(carriage.getclimberFalcon1Position() - inches) < 0.25) {
       return true;
     }
     return false;
