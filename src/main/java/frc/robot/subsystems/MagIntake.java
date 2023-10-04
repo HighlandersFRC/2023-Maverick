@@ -3,11 +3,15 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.subsystems;
-
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenixpro.configs.MotorOutputConfigs;
+import com.ctre.phoenixpro.configs.TalonFXConfiguration;
+import com.ctre.phoenixpro.configs.TalonFXConfigurator;
+import com.ctre.phoenixpro.controls.ControlRequest;
+import com.ctre.phoenixpro.controls.PositionDutyCycle;
+import com.ctre.phoenixpro.controls.VelocityDutyCycle;
+import com.ctre.phoenixpro.hardware.DeviceIdentifier;
+import com.ctre.phoenixpro.hardware.TalonFX;
+import com.ctre.phoenixpro.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -21,103 +25,133 @@ public class MagIntake extends SubsystemBase {
 
   private final PneumaticsControl pneumatics;
 
-  private final TalonFX backMagazine = new TalonFX(15);
-  private final TalonFX frontMagazine = new TalonFX(14);
-  private final TalonFX intakeMotor = new TalonFX(12);
+  //declare and initialize motors
+  private final TalonFX backMagazine = new TalonFX(15, "Canivore");
+  private final TalonFX frontMagazine = new TalonFX(14, "Canivore");
+  private final TalonFX intakeMotor = new TalonFX(12, "Canivore");
+  //declare and initialize configurators
+  private TalonFXConfigurator backMagazineConfig = backMagazine.getConfigurator();
+  private TalonFXConfigurator frontMagazineConfig = frontMagazine.getConfigurator();
+  private TalonFXConfigurator intakeMotorConfig = intakeMotor.getConfigurator();
+  //declare and initialize configurations
+  private TalonFXConfiguration backMagazineConfigs = new TalonFXConfiguration();
+  private MotorOutputConfigs backMagazineMotorOutputConfigs = new MotorOutputConfigs();
+  private TalonFXConfiguration frontMagazineConfigs = new TalonFXConfiguration();
+  private MotorOutputConfigs frontMagazineMotorOutputConfigs = new MotorOutputConfigs();
+  private TalonFXConfiguration intakeMotorConfigs = new TalonFXConfiguration();
+  private MotorOutputConfigs intakeMotorMotorOutputConfigs = new MotorOutputConfigs();
 
   public MagIntake(PneumaticsControl pneumatics) {
     this.pneumatics = pneumatics;
   }
   public void init() {
-    backMagazine.configFactoryDefault();
-    frontMagazine.configFactoryDefault();
-    intakeMotor.configFactoryDefault();
+    //Back Magazine Motor's slot 0 pid
+    backMagazineConfigs.Slot0.kP = 0.3;
+    backMagazineConfigs.Slot0.kI = 0.0006;
+    backMagazineConfigs.Slot0.kD = 0.025;
 
-    // backMagazine.config_kP(0, 0.75);
-    // backMagazine.config_kI(0, 0);
-    // backMagazine.config_kD(0, 0);
-    // backMagazine.config_IntegralZone(0, 0);
+    //Front Magazine Motor's slot 0 pid
+    frontMagazineConfigs.Slot0.kP = 0.2;
+    frontMagazineConfigs.Slot0.kI = 0.0;
+    frontMagazineConfigs.Slot0.kD = 0.0;
 
-    backMagazine.config_kP(0, 0.3);
-    backMagazine.config_kI(0, 0.0006);
-    backMagazine.config_kD(0, 0.025);
-    backMagazine.config_IntegralZone(0, 0);
+    //Set Brake Mode to Mag Motors
+    backMagazineConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    frontMagazineConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
-    frontMagazine.config_kP(0, 0.2);
-    frontMagazine.config_kI(0, 0.0);
-    frontMagazine.config_kD(0, 0.0);
-    frontMagazine.config_IntegralZone(0, 0);
-
-    backMagazine.setNeutralMode(NeutralMode.Brake);
-    frontMagazine.setNeutralMode(NeutralMode.Brake);
-
+    //Set Default Command
     setDefaultCommand(new MagIntakeDefault(this));
-    backMagazine.setNeutralMode(NeutralMode.Brake);
-    intakeMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 100);
-    intakeMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 100);
-    intakeMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 1000);
-    intakeMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 10000);
-    intakeMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_8_PulseWidth, 1000);
-    intakeMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_10_Targets, 1000);
-    intakeMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_12_Feedback1, 1000);
-    intakeMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 1000);
-    intakeMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_14_Turn_PIDF1, 1000);
 
-    frontMagazine.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 100);
-    frontMagazine.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 100);
-    frontMagazine.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 1000);
-    frontMagazine.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 10000);
-    frontMagazine.setStatusFramePeriod(StatusFrameEnhanced.Status_8_PulseWidth, 1000);
-    frontMagazine.setStatusFramePeriod(StatusFrameEnhanced.Status_10_Targets, 1000);
-    frontMagazine.setStatusFramePeriod(StatusFrameEnhanced.Status_12_Feedback1, 1000);
-    frontMagazine.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 1000);
-    frontMagazine.setStatusFramePeriod(StatusFrameEnhanced.Status_14_Turn_PIDF1, 1000);
+    // Set update frequencies (Status Frame Period from phoenix 5)
+    intakeMotor.getFaultField().setUpdateFrequency(10);
+    intakeMotor.getReverseLimit().setUpdateFrequency(10);
+    intakeMotor.getForwardLimit().setUpdateFrequency(10);
+    intakeMotor.getPosition().setUpdateFrequency(10);
+    intakeMotor.getVelocity().setUpdateFrequency(10);
+    intakeMotor.getStickyFaultField().setUpdateFrequency(10);
+    intakeMotor.getSupplyVoltage().setUpdateFrequency(0.1);
+    intakeMotor.getSupplyCurrent().setUpdateFrequency(0.1);
+    intakeMotor.getStatorCurrent().setUpdateFrequency(0.1);
+    intakeMotor.getMotionMagicIsRunning().setUpdateFrequency(1);
+    intakeMotor.getClosedLoopDerivativeOutput().setUpdateFrequency(1);
+    intakeMotor.getClosedLoopError().setUpdateFrequency(1);
+    intakeMotor.getClosedLoopFeedForward().setUpdateFrequency(1);
+    intakeMotor.getClosedLoopSlot().setUpdateFrequency(1);
+    intakeMotor.getClosedLoopIntegratedOutput().setUpdateFrequency(1);
+    intakeMotor.getClosedLoopOutput().setUpdateFrequency(1);
+    intakeMotor.getClosedLoopProportionalOutput().setUpdateFrequency(1);
+    intakeMotor.getClosedLoopReference().setUpdateFrequency(1);
+    intakeMotor.getClosedLoopReferenceSlope().setUpdateFrequency(1);
+    intakeMotor.getRotorPosition().setUpdateFrequency(10);
+    intakeMotor.getRotorVelocity().setUpdateFrequency(10);
+
+    // frontMagazine.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 100);
+    // frontMagazine.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 100);
+    // frontMagazine.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 1000);
+    // frontMagazine.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 10000);
+    // frontMagazine.setStatusFramePeriod(StatusFrameEnhanced.Status_8_PulseWidth, 1000);
+    // frontMagazine.setStatusFramePeriod(StatusFrameEnhanced.Status_10_Targets, 1000);
+    // frontMagazine.setStatusFramePeriod(StatusFrameEnhanced.Status_12_Feedback1, 1000);
+    // frontMagazine.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 1000);
+    // frontMagazine.setStatusFramePeriod(StatusFrameEnhanced.Status_14_Turn_PIDF1, 1000);
   
-    backMagazine.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 100);
-    backMagazine.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 100);
-    backMagazine.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 1000);
-    backMagazine.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 10000);
-    backMagazine.setStatusFramePeriod(StatusFrameEnhanced.Status_8_PulseWidth, 1000);
-    backMagazine.setStatusFramePeriod(StatusFrameEnhanced.Status_10_Targets, 1000);
-    backMagazine.setStatusFramePeriod(StatusFrameEnhanced.Status_12_Feedback1, 1000);
-    backMagazine.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 1000);
-    backMagazine.setStatusFramePeriod(StatusFrameEnhanced.Status_14_Turn_PIDF1, 1000);
+    // backMagazine.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 100);
+    // backMagazine.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 100);
+    // backMagazine.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 1000);
+    // backMagazine.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 10000);
+    // backMagazine.setStatusFramePeriod(StatusFrameEnhanced.Status_8_PulseWidth, 1000);
+    // backMagazine.setStatusFramePeriod(StatusFrameEnhanced.Status_10_Targets, 1000);
+    // backMagazine.setStatusFramePeriod(StatusFrameEnhanced.Status_12_Feedback1, 1000);
+    // backMagazine.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 1000);
+    // backMagazine.setStatusFramePeriod(StatusFrameEnhanced.Status_14_Turn_PIDF1, 1000);
+
+    // apply the configurations
+    backMagazineConfig.apply(backMagazineMotorOutputConfigs);
+    backMagazineConfig.apply(frontMagazineMotorOutputConfigs);
+    backMagazineConfig.apply(intakeMotorMotorOutputConfigs);
+    backMagazineConfig.apply(backMagazineConfigs);
+    frontMagazineConfig.apply(frontMagazineConfigs);
+    intakeMotorConfig.apply(intakeMotorConfigs);
   }
 
   public double rotateBackMag(double degrees) {
-    double motorTics = (degrees / 360.0) * (68.0 / 18.0) * 2048.0 + backMagazine.getSelectedSensorPosition();
-    backMagazine.set(ControlMode.Position, motorTics);
-    return motorTics;
+    double revs = (degrees / 360.0) + backMagazine.getPosition().getValue();
+    PositionDutyCycle cr = new PositionDutyCycle(revs);
+    backMagazine.setControl(cr);
+    return revs;
   }
 
   public double rotateFrontMag(double degrees) {
-    double motorTics = (degrees / 360.0) * (4.0 / 3.0) * 2048.0 + frontMagazine.getSelectedSensorPosition();
-    frontMagazine.set(ControlMode.Position, motorTics);
-    return motorTics;
+    double revs = (degrees / 360.0) + backMagazine.getPosition().getValue();
+    PositionDutyCycle cr = new PositionDutyCycle(revs);
+    frontMagazine.setControl(cr);
+    return revs;
   }
 
   public double getBackMagPosition() {
-    return backMagazine.getSelectedSensorPosition();
+    return backMagazine.getPosition().getValue();
   }
 
   public double getFrontMagPosition() {
-    return frontMagazine.getSelectedSensorPosition();
+    return frontMagazine.getPosition().getValue();
   }
 
   public void setFrontMagRPM(double rpm) {
-    frontMagazine.set(ControlMode.Velocity, Constants.shooterRPMToUnitsPer100MS(rpm));
+    VelocityDutyCycle cr = new VelocityDutyCycle(rpm/60);
+    frontMagazine.setControl(cr);
   }
 
   public void setBackMagRPM(double rpm) {
-    backMagazine.set(ControlMode.Velocity, Constants.shooterRPMToUnitsPer100MS(rpm));
+    VelocityDutyCycle cr = new VelocityDutyCycle(rpm/60);
+    backMagazine.setControl(cr);
   }
 
   public double getFrontMagRPM() {
-    return Constants.unitsPer100MsToRPM(frontMagazine.getSelectedSensorVelocity());
+    return frontMagazine.getVelocity().getValue()*60;
   }
 
   public double getBackMagRPM() {
-    return Constants.unitsPer100MsToRPM(backMagazine.getSelectedSensorVelocity());
+    return frontMagazine.getVelocity().getValue()*60;
   }
 
   private final DigitalInput lowerBackBeamBreak = new DigitalInput(1);
@@ -132,27 +166,26 @@ public class MagIntake extends SubsystemBase {
   }
 
   public void stopMagazine() {
-    backMagazine.set(ControlMode.PercentOutput, 0.0);
-    frontMagazine.set(ControlMode.PercentOutput, 0.0);
+    backMagazine.set(0.0);
+    frontMagazine.set(0.0);
   }
 
   public void moveMagazine() {  
       if(!getUpperBeamBreak()){
-        backMagazine.set(ControlMode.PercentOutput, 0.0);
-        frontMagazine.set(ControlMode.PercentOutput, 0.0);
+        stopMagazine();
       } else {
-          frontMagazine.set(ControlMode.PercentOutput, -0.5);
-          if(!getLowerBackBeamBreak()){
-            backMagazine.set(ControlMode.PercentOutput, 0.3);
+        setFrontMagazine(-0.5);
+        if(!getLowerBackBeamBreak()){
+            setBackMagazine(0.3);
           } else{
-            backMagazine.set(ControlMode.PercentOutput, 0.0);
+            setBackMagazine(0.0);
           }
       }
   }
 
   public void setMagazinePercents(double backPercent, double frontPercent) {
-    backMagazine.set(ControlMode.PercentOutput, backPercent);
-    frontMagazine.set(ControlMode.PercentOutput, frontPercent);
+    backMagazine.set(backPercent);
+    frontMagazine.set(frontPercent);
   }
 
   public void postGreenWheelVelocity() {
@@ -160,10 +193,10 @@ public class MagIntake extends SubsystemBase {
   }
 
   public void setBackMagazine(double percent) {
-    backMagazine.set(ControlMode.PercentOutput, percent);
+    backMagazine.set(percent);
   } 
 public void setFrontMagazine(double percent) {
-    frontMagazine.set(ControlMode.PercentOutput, -percent);
+    frontMagazine.set(-percent);
   }
 
   public void setIntakeUp() {
@@ -175,7 +208,7 @@ public void setFrontMagazine(double percent) {
   }
 
   public void setIntakePercent(double percent) {
-    intakeMotor.set(ControlMode.PercentOutput, -percent);
+    intakeMotor.set(-percent);
   }
 
   @Override
