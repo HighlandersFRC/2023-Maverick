@@ -1,325 +1,280 @@
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
+
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
-import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
-import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
-import com.ctre.phoenix.sensors.CANCoder;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
+import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
+import com.ctre.phoenix6.hardware.CANcoder;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.tools.math.Vector;
+import frc.robot.tools.Vector;
 
 public class SwerveModule extends SubsystemBase {
- 
-    private double moduleNum = 0;
+  private final TalonFX angleMotor;
+  private final TalonFX driveMotor;
+  private final int moduleNumber;
+  private final CANcoder canCoder;
 
-	private final TalonFX angleMotor;
-    private final TalonFX driveMotor;
+  PositionTorqueCurrentFOC positionTorqueFOCRequest = new PositionTorqueCurrentFOC(0.0, 0.0, 0, false);
+  VelocityTorqueCurrentFOC velocityTorqueFOCRequest = new VelocityTorqueCurrentFOC(0, 0, 0, false);
+  VelocityTorqueCurrentFOC velocityTorqueFOCRequestAngleMotor = new VelocityTorqueCurrentFOC(0, 0, 1, false);
 
-    private Vector turnVector = new Vector(0, 0);
+  /** Creates a new SwerveModule. */
+  public SwerveModule(int mModuleNum, TalonFX mAngleMotor, TalonFX mDriveMotor, CANcoder mCanCoder) {
+    moduleNumber = mModuleNum;
+    angleMotor = mAngleMotor;
+    driveMotor = mDriveMotor;
+    canCoder = mCanCoder;
+  }
 
-    private final CANCoder absoluteEncoder;
+  public double torqueAngle(){
+    double length = Constants.ROBOT_LENGTH/2, width = Constants.ROBOT_WIDTH/2, angle;
+    length -= Constants.SWERVE_MODULE_OFFSET;
+    width -= Constants.SWERVE_MODULE_OFFSET;
 
-    public SwerveModule(int moduleNumber, TalonFX mAngleMotor, TalonFX mDriveMotor, double zeroOffset, CANCoder mAbsoluteEncoder) {
-        // sets up the module by defining angle motor and drive motor
-        angleMotor = mAngleMotor;
-        driveMotor = mDriveMotor;
-
-        moduleNum = moduleNumber;
-
-        // defines absolute encoder
-        absoluteEncoder = mAbsoluteEncoder;
-
-        // configures angle motor PID, output, etc.
-        angleMotor.configPeakOutputForward(1);
-        angleMotor.configPeakOutputReverse(-1);
-        angleMotor.configVoltageCompSaturation(11.7);
-        angleMotor.enableVoltageCompensation(true);
-        angleMotor.setSensorPhase(true);
-        angleMotor.selectProfileSlot(0, 0);
-        angleMotor.config_kF(0, 0.0);
-        angleMotor.config_kP(0, 0.2);
-        angleMotor.config_kI(0, 0);
-        angleMotor.config_kD(0, 0.1);
-        angleMotor.config_IntegralZone(0, 0.01);
-
-        // sets drive motor to brake
-        driveMotor.setNeutralMode(NeutralMode.Brake);
-
-
-        //       +x
-        //       ^ 
-        // +y <__|
-
-        // this block creates the turn vector based on the module's relation to the robot(stays constant because robot is square)
-        if(moduleNumber == 1) {
-            turnVector.setI(Math.sqrt(2)/2.0);
-            turnVector.setJ(Math.sqrt(2)/2.0);
-        }
-        if(moduleNumber == 2) {
-            turnVector.setI(-Math.sqrt(2)/2.0);
-            turnVector.setJ(Math.sqrt(2)/2.0);
-        }
-        if(moduleNumber == 3) {
-            turnVector.setI(-Math.sqrt(2)/2.0);
-            turnVector.setJ(-Math.sqrt(2)/2.0);
-        }
-        if(moduleNumber == 4) {
-            turnVector.setI(Math.sqrt(2)/2.0);
-            turnVector.setJ(-Math.sqrt(2)/2.0);
-        }
+    switch(moduleNumber){
+      case 1:
+      angle = (Math.atan2(-width, length)) - Math.PI;
+      break;
+      case 2:
+      angle = Math.atan2(width, length);
+      break;
+      case 3:
+      angle =  Math.PI + Math.atan2(width, -length);
+      break;
+      case 4:
+      angle =  (2 * Math.PI) + (Math.atan2(-width, -length));
+      break;
+      default: 
+      angle = 1;
     }
+    return angle;
+  }
 
-    public double getAbsolutePositionRadians() {
-        return Math.toRadians(absoluteEncoder.getAbsolutePosition());
+  public void testTurnAngle(){
+    double i = Constants.angleToUnitVectorI(torqueAngle() + (Math.PI / 2));
+    double j = Constants.angleToUnitVectorJ(torqueAngle() + (Math.PI / 2));
+    double angle = Math.atan2(j, i);
+    setWheelPID(angle, 0.0);
+  }
+
+  public void init(){
+    TalonFXConfiguration angleMotorConfig = new TalonFXConfiguration();
+    TalonFXConfiguration driveMotorConfig = new TalonFXConfiguration();
+
+    angleMotorConfig.Slot0.kP = 18.0;
+    angleMotorConfig.Slot0.kI = 0.0;
+    angleMotorConfig.Slot0.kD = 0.6;
+
+    angleMotorConfig.Slot1.kP = 3.0;
+    angleMotorConfig.Slot1.kI = 0.0;
+    angleMotorConfig.Slot1.kD = 0.0;
+    angleMotorConfig.Slot1.kV = 0.5;
+
+    angleMotorConfig.TorqueCurrent.PeakForwardTorqueCurrent = 60;
+    angleMotorConfig.TorqueCurrent.PeakReverseTorqueCurrent = -60;
+
+    angleMotorConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+
+    angleMotorConfig.ClosedLoopRamps.TorqueClosedLoopRampPeriod = 0.1;
+
+    driveMotorConfig.Slot0.kP = 8.5;
+    driveMotorConfig.Slot0.kI = 0.6;
+    driveMotorConfig.Slot0.kD = 0.0;
+    driveMotorConfig.Slot0.kV = 1.6;
+
+    driveMotorConfig.TorqueCurrent.PeakForwardTorqueCurrent = 75;
+    driveMotorConfig.TorqueCurrent.PeakReverseTorqueCurrent = -75;
+
+    driveMotorConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+
+    driveMotorConfig.ClosedLoopRamps.TorqueClosedLoopRampPeriod = 0.1;
+
+    double absolutePosition = canCoder.getAbsolutePosition().getValue();
+    angleMotor.setPosition(wheelToSteerMotorRotations(absolutePosition));
+    driveMotor.setPosition(0.0);
+
+    angleMotor.getConfigurator().apply(angleMotorConfig);
+    driveMotor.getConfigurator().apply(driveMotorConfig);
+  }
+
+  public void setWheelPID(double angle, double velocity){
+    angleMotor.setControl(positionTorqueFOCRequest.withPosition(wheelToSteerMotorRotations(degreesToRotations(Math.toDegrees(angle)))));
+    driveMotor.setControl(velocityTorqueFOCRequest.withVelocity(wheelToDriveMotorRotations(velocity)));
+  }
+
+  public void setDrivePID(double velocity){
+    driveMotor.setControl(velocityTorqueFOCRequest.withVelocity(wheelToDriveMotorRotations(velocity)));
+  }
+
+  public double wheelToSteerMotorRotations(double rotations){
+    return (rotations * Constants.STEER_GEAR_RATIO);
+  }
+
+  public double steerMotorToWheelRotations(double rotations){
+    return (rotations / Constants.STEER_GEAR_RATIO);
+  }
+
+  public double wheelToDriveMotorRotations(double rotations){
+    return (rotations * Constants.GEAR_RATIO);
+  }
+
+  public double driveMotorToWheelRotations(double rotations){
+    return (rotations / Constants.GEAR_RATIO);
+  }
+
+  public double degreesToRotations(double degrees){
+    return degrees / 360;
+  }
+
+  public double rotationsToDegrees(double rotations){
+    return rotations * 360;
+  }
+
+  public double MPSToRPS(double mps){
+    return (mps * Constants.Wheel_Rotations_In_A_Meter);
+  }
+
+  public double RPSToMPS(double rps){
+    return (rps / Constants.Wheel_Rotations_In_A_Meter);
+  }
+
+  public void moveAngleMotor(double speed){
+    angleMotor.set(0.2);
+  }
+
+  public void moveDriveMotor(double speed){
+    driveMotor.set(-0.5);
+  }
+
+  public double getModuleDistance(){
+    double position = driveMotor.getPosition().getValue();
+    double wheelRotations = driveMotorToWheelRotations(position);
+    double distance = RPSToMPS(wheelRotations);
+    return distance;
+  }
+
+  public double getWheelPosition(){
+    double position = steerMotorToWheelRotations(angleMotor.getPosition().getValue());
+    return Math.toRadians(rotationsToDegrees(position));
+  }
+
+  public double getWheelSpeed(){
+    double speed = driveMotorToWheelRotations(driveMotor.getVelocity().getValue());
+    return speed;
+  }
+
+  public double getAngleVelocity(){
+    return angleMotor.getVelocity().getValue();
+  }
+
+  public double getWheelSpeedWithoutGearRatio(){
+    return driveMotor.getVelocity().getValue();
+  }
+
+  public double getAngleMotorPosition(){
+    double degrees = rotationsToDegrees(wheelToSteerMotorRotations(angleMotor.getPosition().getValue()));
+    return (Math.toRadians(degrees));
+  }
+
+  public double getCanCoderPosition(){
+    return canCoder.getAbsolutePosition().getValue();
+  }
+
+  public double getCanCoderPositionRadians(){
+    return Constants.rotationsToRadians(canCoder.getAbsolutePosition().getValue());
+  }
+
+  public double getGroundSpeed(){
+    return RPSToMPS(getWheelSpeed());
+    // return driveMotor.getVelocity().getValue();
+  }
+
+  public double getAngleMotorSetpoint(){
+    // return angleMotor.getClosedLoopReference().getValue() * 2 * Math.PI;
+    return angleMotor.getClosedLoopReference().getValue();
+  }
+
+  public double getDriveMotorSetpoint(){
+    return RPSToMPS(driveMotorToWheelRotations(driveMotor.getClosedLoopReference().getValue()));
+    // return driveMotor.getClosedLoopReference().getValue();
+  }
+
+  public double getJoystickAngle(double joystickY, double joystickX) {
+    double joystickAngle = Math.atan2(-joystickX, -joystickY);
+    return joystickAngle;
+  }
+
+  public double getJoystickPosition(double joystickY, double joystickX){
+    double position = joystickY * joystickY + joystickX * joystickX;
+    return position;
+  }
+  
+  public void drive(Vector vector, double turnValue, double navxAngle){
+    if(Math.abs(vector.i) < 0.0001 && Math.abs(vector.j) < 0.0001 && Math.abs(turnValue) < 0.001) {
+      driveMotor.setControl(velocityTorqueFOCRequest.withVelocity(0.0));
+      angleMotor.setControl(velocityTorqueFOCRequestAngleMotor.withVelocity(0.0));
     }
+    else {
+      double angleWanted = Math.atan2(vector.j, vector.i);
+      double wheelPower = Math.sqrt(Math.pow(vector.i, 2) + Math.pow(vector.j, 2));
 
-    // this method returns the angle of the joystick given the X and Y components
-    public double getJoystickAngle(double joystickUp, double joystickSide) {
-        double joystickAngle = Math.atan2(-joystickUp, joystickSide);
-        return joystickAngle;
+      double angleWithNavx = angleWanted + navxAngle;
+
+      double xValueWithNavx = wheelPower * Math.cos(angleWithNavx);
+      double yValueWithNavx = wheelPower * Math.sin(angleWithNavx);
+
+      double turnX = turnValue * (Constants.angleToUnitVectorI(torqueAngle()));
+      double turnY = turnValue * (Constants.angleToUnitVectorJ(torqueAngle()));
+
+      Vector finalVector = new Vector();
+      finalVector.i = xValueWithNavx + turnX;
+      finalVector.j = yValueWithNavx + turnY;
+
+      double finalAngle = -Math.atan2(finalVector.j, finalVector.i);
+      double finalVelocity = Math.sqrt(Math.pow(finalVector.i, 2) + Math.pow(finalVector.j, 2));
+
+      if (finalVelocity > Constants.TOP_SPEED){
+        finalVelocity = Constants.TOP_SPEED;
+      }
+
+      double velocityRPS = (MPSToRPS(finalVelocity));
+      SmartDashboard.putNumber("Velocity", velocityRPS);
+      SmartDashboard.putNumber("Angle Wanted", Math.toDegrees(angleWanted));
+      SmartDashboard.putNumber("Final Angle", Math.toDegrees(finalAngle));
+
+      double currentAngle = getWheelPosition();
+      double currentAngleBelow360 = (getWheelPosition()) % (Math.toRadians(360));
+
+      double setpointAngle = findClosestAngle(currentAngleBelow360, finalAngle);
+      double setpointAngleFlipped = findClosestAngle(currentAngleBelow360, finalAngle + Math.PI);
+
+      if (Math.abs(setpointAngle) <= Math.abs(setpointAngleFlipped)){
+        setWheelPID(currentAngle + setpointAngle, velocityRPS);
+      } else {
+        setWheelPID(currentAngle + setpointAngleFlipped, -velocityRPS);
+      }
+  }
+}
+
+  public double findClosestAngle(double angleA, double angleB){
+    double direction = angleB - angleA;
+
+    if (Math.abs(direction) > Math.PI){
+      direction = -(Math.signum(direction) * (2 * Math.PI)) + direction;
     }
+    return direction;
+  }
 
-    // this method sets the angle motor to move to a specific angle(in radians) and then sets the drive motors to the motor percent
-    public void setAnglePID(double targetAngle, double velocity){
-        angleMotor.set(ControlMode.Position, (radiansToTics((targetAngle))));
-        setDriveMotorVelocity(velocity);
-    }
-
-    // velocity in tics/100 milliseconds
-    public void setDriveMotorVelocity(double velocity) {
-        driveMotor.set(ControlMode.Velocity, velocity);
-    }
-
-    // convert from radians to ticks
-    public double radiansToTics(double radians) {
-        double outputTics = 0.5 * radians * (Constants.FALCON_TICS_PER_ROTATION * Constants.STEER_GEAR_RATIO/Math.PI);
-        return outputTics;
-    }
-
-    // convert from ticks to radians
-    public double ticsToRadians(double tics) {
-        double outputRadians = 2 * Math.PI * (tics/(Constants.FALCON_TICS_PER_ROTATION * Constants.STEER_GEAR_RATIO));
-        return outputRadians;
-    }
-
-    // convert from radians to degrees
-    public double radiansToDegrees(double radians) {
-        double outputDegrees = 180 * radians/Math.PI;
-        return outputDegrees;
-    }
-
-    // convert from degrees to radians
-    public double degreesToRadians(double degrees) {
-        double outputRadians = Math.PI * degrees/180;
-        return outputRadians;
-    }
-
-    // sets the drive motor to the specified percent
-    public void setDriveMotors(double percent) {
-        driveMotor.set(ControlMode.PercentOutput, percent);
-    }
-
-    // returns state of swerve modules - Used for Odometry
-    public SwerveModuleState getState(double navxOffset) {
-        return new SwerveModuleState((ticsPer100MSToSpeed(driveMotor.getSelectedSensorVelocity())), new Rotation2d(Math.toRadians(getAbsolutePosition() - navxOffset)));
-    }
-
-    public double getModuleDistance() {
-        double currentTics = driveMotor.getSelectedSensorPosition();
-        // because current tics is just the current encoder position rather than tics/second, calling the ticsPerSecondToSpeed method will return a distance rather than a speed
-        double distance = ticsPerSecondToSpeed(currentTics);
-        return distance;
-    }
-
-    // method run when robot boots up, sets up Current Limits, and Frame Periods to limit CAN usage, as well as tells internal encoder where it actually is
-    public void init() {
-        angleMotor.configFactoryDefault();
-        driveMotor.configFactoryDefault();
-
-        angleMotor.setSelectedSensorPosition(radiansToTics(degreesToRadians(absoluteEncoder.getAbsolutePosition())));
-        angleMotor.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 35, 35 , 0.5));
-        angleMotor.configStatorCurrentLimit(new StatorCurrentLimitConfiguration(false, 60, 60, 0.5));
-
-        angleMotor.config_kP(0, 0.2);
-        angleMotor.config_kI(0, 0.0);
-        angleMotor.config_kD(0, 0.1);
-
-        // angleMotor.config_kP(0, 0.1);
-        // angleMotor.config_kI(0, 0.0);
-        // angleMotor.config_kD(0, 0.1);
-
-        angleMotor.configAllowableClosedloopError(0, radiansToTics(degreesToRadians(2)), 10);
-
-        driveMotor.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 40, 40, 0.5));
-        driveMotor.configStatorCurrentLimit(new StatorCurrentLimitConfiguration(true, 75, 75, 0.5));
-        driveMotor.setSelectedSensorPosition(0);
-        driveMotor.setInverted(true);;
-
-        driveMotor.config_kP(0, 0.3);
-        driveMotor.config_kI(0, 0);
-        driveMotor.config_kD(0, 0.018);
-
-        angleMotor.setNeutralMode(NeutralMode.Brake);
-        driveMotor.setNeutralMode(NeutralMode.Brake);
-
-        driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 100);
-        driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 100);
-        driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 1000);
-        driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 1000);
-        driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_8_PulseWidth, 1000);
-
-        angleMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 100);
-        angleMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 100);
-        angleMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 1000);
-        angleMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 1000);
-        angleMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_8_PulseWidth, 1000);
-    }
-
-    // returns angle motor position in ticks
-    public double getAngleMotorEncoder(){
-        return angleMotor.getSelectedSensorPosition();
-    }
-
-    // returns Cancoder position in degrees
-    public double getAbsolutePosition() {
-        return absoluteEncoder.getAbsolutePosition();
-    }
-
-    // returns modules position in radians
-    public double getModulePosition(){
-        return ticsToRadians(getAngleMotorEncoder());
-    }
-
-    // input is speed in meters/second
-    public double speedToTicsPerSecond(double speed) {
-        double tics = (speed * Constants.GEAR_RATIO * Constants.FALCON_TICS_PER_ROTATION)/(Constants.WHEEL_CIRCUMFRENCE);
-        // System.out.println(tics);
-        return tics;
-    }
-
-    // change speed to motor velocity units
-    public double speedToTicsPer100MS(double speed) {
-        double ticsPerSecond = speedToTicsPerSecond(speed);
-        double ticsPer100MS = ticsPerSecond/10;
-        return ticsPer100MS;
-    }
-
-    public double ticsPerSecondToSpeed(double tics) {
-        double speed = (tics * Constants.WHEEL_CIRCUMFRENCE)/(Constants.GEAR_RATIO * Constants.FALCON_TICS_PER_ROTATION);
-        return speed;
-    }
-
-    public void postDriveMotorSpeed() {
-        if(moduleNum == 1) {
-            SmartDashboard.putNumber("MODULE 1", ticsPer100MSToSpeed(driveMotor.getSelectedSensorVelocity()));
-        }
-        if(moduleNum == 2) {
-            SmartDashboard.putNumber("MODULE 2", ticsPer100MSToSpeed(driveMotor.getSelectedSensorVelocity()));
-        }
-        if(moduleNum == 3) {
-            SmartDashboard.putNumber("MODULE 3", ticsPer100MSToSpeed(driveMotor.getSelectedSensorVelocity()));
-        }
-        if(moduleNum == 4) {
-            SmartDashboard.putNumber("MODULE 4", ticsPer100MSToSpeed(driveMotor.getSelectedSensorVelocity()));
-        }
-    }
-
-    // motor velocity units to speed
-    public double ticsPer100MSToSpeed(double tics) {
-        double speedPer100MS = ticsPerSecondToSpeed(tics);
-        double speed = speedPer100MS * 10;
-        return speed;
-    }
-
-    // method to determine the angle of each wheel and the percent to set each module to
-    // speedVector is a <x, y> ground speed relative to the field measured in meters/second, turnRate is in radians/second relative to the robot(positive is counterclockwise), navxOffset is in radians(positive is counterclockwise)
-    public void velocityDrive(Vector speedVector, double turnRate, double navxOffset) {
-        if(Math.abs(speedVector.getI()) < 0.0001 && Math.abs(speedVector.getJ()) < 0.0001 && Math.abs(turnRate) < 0.01) {
-            driveMotor.set(ControlMode.Velocity, 0.0);
-            // angleMotor.set(ControlMode.PercentOutput, 0);
-        }
-        else {
-            // finds the target angle based on controller XY and then factors in navx offset
-            double targetAngle = Math.atan2(speedVector.getJ(), speedVector.getI());
-            targetAngle = targetAngle - (navxOffset);
-
-            // converts target angle from (r, theta) to <x, y>
-            double hypotenuse = Math.sqrt(Math.pow(speedVector.getI(), 2) + Math.pow(speedVector.getJ(), 2));
-            double navxAdjustedX = hypotenuse * Math.cos(targetAngle);
-            double navxAdjustedY = hypotenuse * Math.sin(targetAngle);
-
-            // factoring in turn percent to turn vector constants so that it doesn't turn too much
-            double turnRateMetersPerSec = turnRate * Constants.ROBOT_RADIUS;
-            double turnX = turnRateMetersPerSec * turnVector.getI();
-            double turnY = turnRateMetersPerSec * turnVector.getJ();
-
-            // add the turn vector plus the strafe vector together
-            Vector adjustedVector = new Vector(turnX + navxAdjustedX, turnY + navxAdjustedY);
-
-            // compute adjusted angle and power based on adjusted vector
-            double motorFieldSpeed = Math.sqrt(Math.pow(adjustedVector.getI(), 2) + Math.pow(adjustedVector.getJ(), 2));
-
-            if(motorFieldSpeed > Constants.TOP_SPEED) {
-                System.out.println("Module Number: " + moduleNum + " cannot reach requested speed of " + motorFieldSpeed);
-                motorFieldSpeed = Constants.TOP_SPEED;
-            }
-
-            double adjustedAngle = Math.atan2(adjustedVector.getJ(), adjustedVector.getI());
-
-            double velocityTicsPer100MS = (speedToTicsPer100MS(motorFieldSpeed));
-
-            // find initial angle of module to use optimizer
-            double initAngle = getModulePosition();
-            double boundedInitAngle = initAngle%Math.toRadians(360);
-
-            double caseOneAngle = adjustedAngle;
-            if(adjustedAngle > boundedInitAngle){
-                caseOneAngle = adjustedAngle - Math.toRadians(360);
-            }
-            //Case one moves clockwise
-            double caseTwoAngle = adjustedAngle;
-            if(adjustedAngle < boundedInitAngle){
-            caseTwoAngle = adjustedAngle + Math.toRadians(360);
-
-            }
-            //Case two moves counterclockwise
-            double caseThreeAngle = adjustedAngle + Math.toRadians(180);
-            double caseFourAngle = (adjustedAngle + Math.toRadians(180)) - Math.toRadians(360);
-
-            // check distance to each case
-            double distanceOne = Math.abs(boundedInitAngle - caseOneAngle);
-            double distanceTwo = Math.abs(boundedInitAngle - caseTwoAngle);
-            double distanceThree = Math.abs(boundedInitAngle - caseThreeAngle);
-            double distanceFour = Math.abs(boundedInitAngle - caseFourAngle);
-
-            // based on which distance is smallest, setAnglePID with +- motor percent and angle
-            if(motorFieldSpeed > 0.01){
-                if((distanceOne < distanceTwo) && (distanceOne < distanceThree) && (distanceOne < distanceFour)){
-                    setAnglePID((caseOneAngle - boundedInitAngle + initAngle), velocityTicsPer100MS);
-                }
-                if((distanceTwo < distanceOne) && (distanceTwo < distanceThree) && (distanceTwo < distanceFour)){
-                    setAnglePID((caseTwoAngle - boundedInitAngle + initAngle), velocityTicsPer100MS);
-                }
-                if((distanceThree < distanceOne) && (distanceThree < distanceTwo) && (distanceThree < distanceFour)){
-                    setAnglePID((caseThreeAngle - boundedInitAngle + initAngle),  -velocityTicsPer100MS);
-                }
-                if((distanceFour < distanceOne) && (distanceFour < distanceTwo) && (distanceFour < distanceThree)){
-                    setAnglePID((caseFourAngle - boundedInitAngle + initAngle),  -velocityTicsPer100MS);
-                }
-            }
-            else{
-                driveMotor.set(ControlMode.PercentOutput, 0);
-            }
-        }
-
-        postDriveMotorSpeed();
-        
-    }
+  @Override
+  public void periodic() {
+    // This method will be called once per scheduler run
+  }
 }
