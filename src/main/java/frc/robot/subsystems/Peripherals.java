@@ -27,6 +27,21 @@ public class Peripherals extends SubsystemBase {
     return navx.currentAngle();
   }
 
+  private double navxStartingRoll = 0;
+
+  public double getNavxRollOffset() {
+    if(navxStartingRoll == 0) {
+      navxStartingRoll = getNavxRoll();
+      if(navxStartingRoll == 0) {
+        navxStartingRoll = 0.0001;
+      }
+      return navxStartingRoll;
+    } else {
+      double offset = getNavxRoll() - navxStartingRoll;
+      return offset;
+    }
+  }
+
   public void zeroNavx(){
     navx.softResetYaw();
     navx.softResetAngle();

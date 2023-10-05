@@ -104,13 +104,13 @@ public class AutonomousFollower extends CommandBase {
     desiredVelocityArray = drive.pidController(odometryFusedX, odometryFusedY, odometryFusedTheta, currentTime, path);
     
     // create velocity vector and set desired theta change
-    Vector velocityVector = new Vector();
-    velocityVector.i = desiredVelocityArray[0];
-    velocityVector.j = desiredVelocityArray[1];
+    Vector velocityVector = new Vector(desiredVelocityArray[0], desiredVelocityArray[1]);
+    // velocityVector.i = desiredVelocityArray[0];
+    // velocityVector.j = desiredVelocityArray[1];
     desiredThetaChange = desiredVelocityArray[2];
 
-    SmartDashboard.putNumber("Desired Vector I", velocityVector.i);
-    SmartDashboard.putNumber("Desired Vector J", velocityVector.j);
+    SmartDashboard.putNumber("Desired Vector I", velocityVector.getI());
+    SmartDashboard.putNumber("Desired Vector J", velocityVector.getJ());
     SmartDashboard.putNumber("Desired Angle", desiredThetaChange);
 
     drive.autoDrive(velocityVector, desiredThetaChange);
@@ -125,9 +125,9 @@ public class AutonomousFollower extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    Vector velocityVector = new Vector();
-    velocityVector.i = 0.0;
-    velocityVector.j = 0.0;
+    Vector velocityVector = new Vector(0.0, 0.0);
+    // velocityVector.i = 0.0;
+    // velocityVector.j = 0.0;
     double desiredThetaChange = 0.0;
     drive.autoDrive(velocityVector, desiredThetaChange);
 

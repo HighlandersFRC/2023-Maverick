@@ -221,13 +221,13 @@ public class SwerveModule extends SubsystemBase {
   }
   
   public void drive(Vector vector, double turnValue, double navxAngle){
-    if(Math.abs(vector.i) < 0.0001 && Math.abs(vector.j) < 0.0001 && Math.abs(turnValue) < 0.001) {
+    if(Math.abs(vector.getI()) < 0.0001 && Math.abs(vector.getJ()) < 0.0001 && Math.abs(turnValue) < 0.001) {
       driveMotor.setControl(velocityTorqueFOCRequest.withVelocity(0.0));
       angleMotor.setControl(velocityTorqueFOCRequestAngleMotor.withVelocity(0.0));
     }
     else {
-      double angleWanted = Math.atan2(vector.j, vector.i);
-      double wheelPower = Math.sqrt(Math.pow(vector.i, 2) + Math.pow(vector.j, 2));
+      double angleWanted = Math.atan2(vector.getJ(), vector.getI());
+      double wheelPower = Math.sqrt(Math.pow(vector.getI(), 2) + Math.pow(vector.getJ(), 2));
 
       double angleWithNavx = angleWanted + navxAngle;
 
@@ -237,15 +237,18 @@ public class SwerveModule extends SubsystemBase {
       double turnX = turnValue * (Constants.angleToUnitVectorI(torqueAngle()));
       double turnY = turnValue * (Constants.angleToUnitVectorJ(torqueAngle()));
 
-      Vector finalVector = new Vector();
-      finalVector.i = xValueWithNavx + turnX;
-      finalVector.j = yValueWithNavx + turnY;
+      double finalVectori= xValueWithNavx + turnX;
+      double finalVectorj = yValueWithNavx + turnY;
 
-      SmartDashboard.putNumber("Actual I", finalVector.i);
-      SmartDashboard.putNumber("Actual J", finalVector.j);
+      Vector finalVector = new Vector(finalVectori, finalVectorj);
+      // finalVector.i = xValueWithNavx + turnX;
+      // finalVector.j = yValueWithNavx + turnY;
 
-      double finalAngle = -Math.atan2(finalVector.j, finalVector.i);
-      double finalVelocity = Math.sqrt(Math.pow(finalVector.i, 2) + Math.pow(finalVector.j, 2));
+      SmartDashboard.putNumber("Actual I", finalVector.getI());
+      SmartDashboard.putNumber("Actual J", finalVector.getJ());
+
+      double finalAngle = -Math.atan2(finalVector.getJ(), finalVector.getI());
+      double finalVelocity = Math.sqrt(Math.pow(finalVector.getI(), 2) + Math.pow(finalVector.getJ(), 2));
 
       if (finalVelocity > Constants.TOP_SPEED){
         finalVelocity = Constants.TOP_SPEED;

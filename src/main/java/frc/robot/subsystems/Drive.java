@@ -436,6 +436,14 @@ public class Drive extends SubsystemBase {
     return adjustedY;
   }
 
+  public void autoRobotCentricDrive(Vector stopVector, double turnRadiansPerSec){
+    updateOdometryFusedArray();
+    frontLeft.drive(stopVector, turnRadiansPerSec, 0);
+    frontRight.drive(stopVector, turnRadiansPerSec, 0);
+    backLeft.drive(stopVector, turnRadiansPerSec, 0);
+    backRight.drive(stopVector, turnRadiansPerSec, 0);
+  }
+
   public void drive(double forwardStrafe, double sidewaysStrafe, double turnAmount){
     updateOdometryFusedArray();
 
@@ -450,9 +458,9 @@ public class Drive extends SubsystemBase {
     double finalY = adjustedY * Constants.TOP_SPEED;
     double turn = 0.75 * (rightStick * Constants.TOP_SPEED);
 
-    Vector controllerVector = new Vector();
-    controllerVector.i = finalX;
-    controllerVector.j = finalY;
+    Vector controllerVector = new Vector(finalX, finalY);
+    // controllerVector.i = finalX;
+    // controllerVector.j = finalY;
 
     // SmartDashboard.putNumber("Joystick Y", finalY);
     // SmartDashboard.putNumber("Joystick X", finalX);
