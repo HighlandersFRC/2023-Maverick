@@ -33,7 +33,7 @@ public final class Constants {
 
   public static final double TOP_SPEED = feetToMeters(20);
 
-  public static final double WHEEL_DIAMETER = 0.1016;
+  public static final double WHEEL_DIAMETER = inchesToMeters(4);
 
   public static final double WHEEL_CIRCUMFRENCE = Math.PI * WHEEL_DIAMETER;
 
@@ -42,6 +42,17 @@ public final class Constants {
   public static final double FIELD_WIDTH = 8.2;
   
   public static final double FIELD_LENGTH = 16.63;
+
+  public static final double[][] TAG_LOCATIONS = new double[][] {
+    {15.513558, 1.071626, 0.462788},
+    {15.513558, 2.748026, 0.462788},
+    {15.513558, 4.424426, 0.462788},
+    {16.178784, 6.749796, 0.695452},
+    {0.36195, 6.749796, 0.695452},
+    {1.02743, 4.4224426, 0.462788},
+    {1.02743, 2.748026, 0.462788},
+    {1.02743, 1.071626, 0.462788},
+  };
 
   public static double degreesToRotations(double degrees){
     return degrees / 360;

@@ -22,7 +22,7 @@ public class SwerveModule extends SubsystemBase {
   private final int moduleNumber;
   private final CANcoder canCoder;
 
-  PositionTorqueCurrentFOC positionTorqueFOCRequest = new PositionTorqueCurrentFOC(0.0, 0.0, 0, false);
+  PositionTorqueCurrentFOC positionTorqueFOCRequest = new PositionTorqueCurrentFOC(0, 0, 0, false);
   VelocityTorqueCurrentFOC velocityTorqueFOCRequest = new VelocityTorqueCurrentFOC(0, 0, 0, false);
   VelocityTorqueCurrentFOC velocityTorqueFOCRequestAngleMotor = new VelocityTorqueCurrentFOC(0, 0, 1, false);
 
@@ -69,7 +69,7 @@ public class SwerveModule extends SubsystemBase {
     TalonFXConfiguration angleMotorConfig = new TalonFXConfiguration();
     TalonFXConfiguration driveMotorConfig = new TalonFXConfiguration();
 
-    angleMotorConfig.Slot0.kP = 18.0;
+    angleMotorConfig.Slot0.kP = 18.5;
     angleMotorConfig.Slot0.kI = 0.0;
     angleMotorConfig.Slot0.kD = 0.6;
 
@@ -85,7 +85,7 @@ public class SwerveModule extends SubsystemBase {
 
     angleMotorConfig.ClosedLoopRamps.TorqueClosedLoopRampPeriod = 0.1;
 
-    driveMotorConfig.Slot0.kP = 8.5;
+    driveMotorConfig.Slot0.kP = 8.0;
     driveMotorConfig.Slot0.kI = 0.6;
     driveMotorConfig.Slot0.kD = 0.0;
     driveMotorConfig.Slot0.kV = 1.6;
@@ -106,6 +106,8 @@ public class SwerveModule extends SubsystemBase {
   }
 
   public void setWheelPID(double angle, double velocity){
+    SmartDashboard.putNumber("Angle Targeted", angle);
+    SmartDashboard.putNumber("Velocity Targeted", velocity);
     angleMotor.setControl(positionTorqueFOCRequest.withPosition(wheelToSteerMotorRotations(degreesToRotations(Math.toDegrees(angle)))));
     driveMotor.setControl(velocityTorqueFOCRequest.withVelocity(wheelToDriveMotorRotations(velocity)));
   }
@@ -156,6 +158,7 @@ public class SwerveModule extends SubsystemBase {
 
   public double getModuleDistance(){
     double position = driveMotor.getPosition().getValue();
+    // double wheelRotations = (position * Constants.Wheel_Rotations_In_A_Meter) / Constants.GEAR_RATIO;
     double wheelRotations = driveMotorToWheelRotations(position);
     double distance = RPSToMPS(wheelRotations);
     return distance;
@@ -238,6 +241,9 @@ public class SwerveModule extends SubsystemBase {
       finalVector.i = xValueWithNavx + turnX;
       finalVector.j = yValueWithNavx + turnY;
 
+      SmartDashboard.putNumber("Actual I", finalVector.i);
+      SmartDashboard.putNumber("Actual J", finalVector.j);
+
       double finalAngle = -Math.atan2(finalVector.j, finalVector.i);
       double finalVelocity = Math.sqrt(Math.pow(finalVector.i, 2) + Math.pow(finalVector.j, 2));
 
@@ -246,8 +252,8 @@ public class SwerveModule extends SubsystemBase {
       }
 
       double velocityRPS = (MPSToRPS(finalVelocity));
+      
       SmartDashboard.putNumber("Velocity", velocityRPS);
-      SmartDashboard.putNumber("Angle Wanted", Math.toDegrees(angleWanted));
       SmartDashboard.putNumber("Final Angle", Math.toDegrees(finalAngle));
 
       double currentAngle = getWheelPosition();

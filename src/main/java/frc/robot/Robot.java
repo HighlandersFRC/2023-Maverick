@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.MoveWheelToAngle;
 import frc.robot.commands.ZeroNavx;
+import frc.robot.commands.autos.MoveForwardAuto;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Peripherals;
 
@@ -44,7 +45,7 @@ public class Robot extends LoggedRobot {
   JSONObject pathRead;
   JSONArray pathJSON;
 
-  String fieldSide;
+  // String fieldSide;
 
   SequentialCommandGroup auto;
   /**
@@ -62,16 +63,16 @@ public class Robot extends LoggedRobot {
     logger.addDataReceiver(new NT4Publisher());
     logger.start();
 
-    // try {
-    //   pathingFile = new File("/home/lvuser/deploy/MoveForwardBackward.json");
-    //   FileReader scanner = new FileReader(pathingFile);
-    //   pathRead = new JSONObject(new JSONTokener(scanner));
-    //   pathJSON = (JSONArray) pathRead.get("sampled_points");
-    // } catch (Exception e) {
-    //   System.out.println("ERROR WITH PATH FILE " + e);
-    // }
-    // // this.auto = new MoveForwardBackward();
-    // auto.schedule();
+    try {
+      pathingFile = new File("/home/lvuser/deploy/IcebabyTestAuto.json");
+      FileReader scanner = new FileReader(pathingFile);
+      pathRead = new JSONObject(new JSONTokener(scanner));
+      pathJSON = (JSONArray) pathRead.get("sampled_points");
+    } catch (Exception e) {
+      System.out.println("ERROR WITH PATH FILE " + e);
+    }
+    this.auto = new MoveForwardAuto(drive, peripherals);
+    auto.schedule();
   }
 
   /**
@@ -115,12 +116,12 @@ public class Robot extends LoggedRobot {
       m_autonomousCommand.schedule();
     }
 
-    // try {
-    //   this.auto.schedule();
-    // } catch (Exception e){
-    //   System.out.println("No auto is selected");
-    // } 
-    // drive.autoInit(this.pathJSON);
+    try {
+      this.auto.schedule();
+    } catch (Exception e){
+      System.out.println("No auto is selected");
+    } 
+    drive.autoInit(this.pathJSON);
   }
 
   /** This function is called periodically during autonomous. */

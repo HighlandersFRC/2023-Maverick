@@ -36,6 +36,22 @@ public class Peripherals extends SubsystemBase {
     navx.setNavxAngle(angle);
   } 
 
+  public double getNavxYaw(){
+    return navx.currentYaw();
+  }
+
+  public double getNavxPitch(){
+    return -navx.currentPitch();
+  }
+
+  public double getNavxRoll(){
+    return navx.currentRoll();
+  }
+
+  public double getNavxRate() {
+    return navx.getAngleRate();
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
