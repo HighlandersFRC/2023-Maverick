@@ -3,15 +3,15 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.subsystems;
-import com.ctre.phoenixpro.configs.MotorOutputConfigs;
-import com.ctre.phoenixpro.configs.TalonFXConfiguration;
-import com.ctre.phoenixpro.configs.TalonFXConfigurator;
-import com.ctre.phoenixpro.controls.ControlRequest;
-import com.ctre.phoenixpro.controls.PositionDutyCycle;
-import com.ctre.phoenixpro.controls.VelocityDutyCycle;
-import com.ctre.phoenixpro.hardware.DeviceIdentifier;
-import com.ctre.phoenixpro.hardware.TalonFX;
-import com.ctre.phoenixpro.signals.NeutralModeValue;
+import com.ctre.phoenix6.configs.MotorOutputConfigs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.configs.TalonFXConfigurator;
+import com.ctre.phoenix6.controls.ControlRequest;
+import com.ctre.phoenix6.controls.PositionDutyCycle;
+import com.ctre.phoenix6.controls.VelocityDutyCycle;
+import com.ctre.phoenix6.hardware.DeviceIdentifier;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -85,25 +85,49 @@ public class MagIntake extends SubsystemBase {
     intakeMotor.getRotorPosition().setUpdateFrequency(10);
     intakeMotor.getRotorVelocity().setUpdateFrequency(10);
 
-    // frontMagazine.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 100);
-    // frontMagazine.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 100);
-    // frontMagazine.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 1000);
-    // frontMagazine.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 10000);
-    // frontMagazine.setStatusFramePeriod(StatusFrameEnhanced.Status_8_PulseWidth, 1000);
-    // frontMagazine.setStatusFramePeriod(StatusFrameEnhanced.Status_10_Targets, 1000);
-    // frontMagazine.setStatusFramePeriod(StatusFrameEnhanced.Status_12_Feedback1, 1000);
-    // frontMagazine.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 1000);
-    // frontMagazine.setStatusFramePeriod(StatusFrameEnhanced.Status_14_Turn_PIDF1, 1000);
-  
-    // backMagazine.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 100);
-    // backMagazine.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 100);
-    // backMagazine.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 1000);
-    // backMagazine.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 10000);
-    // backMagazine.setStatusFramePeriod(StatusFrameEnhanced.Status_8_PulseWidth, 1000);
-    // backMagazine.setStatusFramePeriod(StatusFrameEnhanced.Status_10_Targets, 1000);
-    // backMagazine.setStatusFramePeriod(StatusFrameEnhanced.Status_12_Feedback1, 1000);
-    // backMagazine.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 1000);
-    // backMagazine.setStatusFramePeriod(StatusFrameEnhanced.Status_14_Turn_PIDF1, 1000);
+    frontMagazine.getFaultField().setUpdateFrequency(10);
+    frontMagazine.getReverseLimit().setUpdateFrequency(10);
+    frontMagazine.getForwardLimit().setUpdateFrequency(10);
+    frontMagazine.getPosition().setUpdateFrequency(10);
+    frontMagazine.getVelocity().setUpdateFrequency(10);
+    frontMagazine.getStickyFaultField().setUpdateFrequency(10);
+    frontMagazine.getSupplyVoltage().setUpdateFrequency(0.1);
+    frontMagazine.getSupplyCurrent().setUpdateFrequency(0.1);
+    frontMagazine.getStatorCurrent().setUpdateFrequency(0.1);
+    frontMagazine.getMotionMagicIsRunning().setUpdateFrequency(1);
+    frontMagazine.getClosedLoopDerivativeOutput().setUpdateFrequency(1);
+    frontMagazine.getClosedLoopError().setUpdateFrequency(1);
+    frontMagazine.getClosedLoopFeedForward().setUpdateFrequency(1);
+    frontMagazine.getClosedLoopSlot().setUpdateFrequency(1);
+    frontMagazine.getClosedLoopIntegratedOutput().setUpdateFrequency(1);
+    frontMagazine.getClosedLoopOutput().setUpdateFrequency(1);
+    frontMagazine.getClosedLoopProportionalOutput().setUpdateFrequency(1);
+    frontMagazine.getClosedLoopReference().setUpdateFrequency(1);
+    frontMagazine.getClosedLoopReferenceSlope().setUpdateFrequency(1);
+    frontMagazine.getRotorPosition().setUpdateFrequency(10);
+    frontMagazine.getRotorVelocity().setUpdateFrequency(10);
+
+    backMagazine.getFaultField().setUpdateFrequency(10);
+    backMagazine.getReverseLimit().setUpdateFrequency(10);
+    backMagazine.getForwardLimit().setUpdateFrequency(10);
+    backMagazine.getPosition().setUpdateFrequency(10);
+    backMagazine.getVelocity().setUpdateFrequency(10);
+    backMagazine.getStickyFaultField().setUpdateFrequency(10);
+    backMagazine.getSupplyVoltage().setUpdateFrequency(0.1);
+    backMagazine.getSupplyCurrent().setUpdateFrequency(0.1);
+    backMagazine.getStatorCurrent().setUpdateFrequency(0.1);
+    backMagazine.getMotionMagicIsRunning().setUpdateFrequency(1);
+    backMagazine.getClosedLoopDerivativeOutput().setUpdateFrequency(1);
+    backMagazine.getClosedLoopError().setUpdateFrequency(1);
+    backMagazine.getClosedLoopFeedForward().setUpdateFrequency(1);
+    backMagazine.getClosedLoopSlot().setUpdateFrequency(1);
+    backMagazine.getClosedLoopIntegratedOutput().setUpdateFrequency(1);
+    backMagazine.getClosedLoopOutput().setUpdateFrequency(1);
+    backMagazine.getClosedLoopProportionalOutput().setUpdateFrequency(1);
+    backMagazine.getClosedLoopReference().setUpdateFrequency(1);
+    backMagazine.getClosedLoopReferenceSlope().setUpdateFrequency(1);
+    backMagazine.getRotorPosition().setUpdateFrequency(10);
+    backMagazine.getRotorVelocity().setUpdateFrequency(10);
 
     // apply the configurations
     backMagazineConfig.apply(backMagazineMotorOutputConfigs);

@@ -8,7 +8,7 @@ import java.util.function.BooleanSupplier;
 
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.Tools.TriggerButton;
+import frc.robot.tools.TriggerButton;
 
 /** Add your docs here. */
 public class OI {

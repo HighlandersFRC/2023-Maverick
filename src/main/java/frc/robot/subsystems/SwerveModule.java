@@ -98,8 +98,8 @@ public class SwerveModule extends SubsystemBase {
     driveMotorConfig.ClosedLoopRamps.TorqueClosedLoopRampPeriod = 0.1;
 
     double absolutePosition = canCoder.getAbsolutePosition().getValue();
-    angleMotor.setPosition(wheelToSteerMotorRotations(absolutePosition));
-    driveMotor.setPosition(0.0);
+    angleMotor.setRotorPosition(wheelToSteerMotorRotations(absolutePosition));
+    driveMotor.setRotorPosition(0.0);
 
     angleMotor.getConfigurator().apply(angleMotorConfig);
     driveMotor.getConfigurator().apply(driveMotorConfig);

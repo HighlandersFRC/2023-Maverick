@@ -9,7 +9,7 @@ import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.SPI.Port;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Tools.Navx;
+import frc.robot.tools.Navx;
 
 public class Peripherals extends SubsystemBase {
   /** Creates a new Peripherals. */

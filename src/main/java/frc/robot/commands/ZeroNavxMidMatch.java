@@ -18,7 +18,7 @@ public class ZeroNavxMidMatch extends CommandBase {
 
   @Override
   public void execute() {
-    drive.zeroNavxMidMatch();
+    drive.zeroNavx();
   }
 
   @Override

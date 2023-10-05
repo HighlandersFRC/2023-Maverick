@@ -10,7 +10,7 @@ import org.json.JSONArray;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Tools.Vector;
+import frc.robot.tools.Vector;
 import frc.robot.subsystems.Drive;
 
 public class AutonomousFollower extends CommandBase {
