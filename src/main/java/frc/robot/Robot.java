@@ -18,11 +18,16 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.commands.IntakeBalls;
 import frc.robot.commands.MoveWheelToAngle;
+import frc.robot.commands.Outtake;
 import frc.robot.commands.ZeroNavx;
 import frc.robot.commands.autos.MoveForwardAuto;
 import frc.robot.subsystems.Drive;
+import frc.robot.subsystems.Lights;
+import frc.robot.subsystems.MagIntake;
 import frc.robot.subsystems.Peripherals;
+import frc.robot.tools.PneumaticsControl;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -38,6 +43,9 @@ public class Robot extends LoggedRobot {
   public Peripherals peripherals = new Peripherals();
   public Drive drive = new Drive(peripherals);
   private Logger logger = Logger.getInstance();
+  private PneumaticsControl pneumatics = new PneumaticsControl();
+  private MagIntake magIntake = new MagIntake(pneumatics);
+  private Lights lights = new Lights();
 
   File pathingFile;
   String pathString;
@@ -140,6 +148,8 @@ public class Robot extends LoggedRobot {
 
     OI.buttonA.whileTrue(new MoveWheelToAngle(drive, 0.5));
     OI.buttonB.whileTrue(new MoveWheelToAngle(drive, -0.5));
+    OI.rt.whileTrue(new IntakeBalls(magIntake, lights));
+    OI.lt.whileTrue(new Outtake(magIntake));
     OI.viewButton.whileTrue(new ZeroNavx(drive));
   }
 
