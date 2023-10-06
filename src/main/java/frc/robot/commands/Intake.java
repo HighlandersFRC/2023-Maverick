@@ -9,11 +9,11 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.OI;
 import frc.robot.subsystems.MagIntake;
 
-public class Outtake extends CommandBase {
+public class Intake extends CommandBase {
   /** Creates a new Outtake. */
   MagIntake mi;
   double start, delay = 0.5;
-  public Outtake(MagIntake mi) {
+  public Intake(MagIntake mi) {
     // Seconds = -1 if you don't want it to stop after some amount of time
     this.mi = mi;
     addRequirements(mi);
@@ -30,11 +30,11 @@ public class Outtake extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (Timer.getFPGATimestamp()-start>delay){
-      mi.setFrontMagazine(-0.5);
-      mi.setIntakePercent(-0.5);
+    if ((Timer.getFPGATimestamp()-start)>delay){
+      mi.setFrontMagazine(0.5);
+      mi.setIntakePercent(0.5);
     }
-    System.out.println("Outtaking" + (Timer.getFPGATimestamp()-start));
+    System.out.println("Intaking" + (Timer.getFPGATimestamp()-start));
   }
 
   // Called once the command ends or is interrupted.
@@ -48,6 +48,6 @@ public class Outtake extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return !OI.lt.getAsBoolean();
+    return !OI.rt.getAsBoolean();
   }
 }

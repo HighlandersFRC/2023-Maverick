@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.IntakeBalls;
 import frc.robot.commands.MoveWheelToAngle;
 import frc.robot.commands.Outtake;
+import frc.robot.commands.Intake;
 import frc.robot.commands.ZeroNavx;
 import frc.robot.commands.autos.MoveForwardAuto;
 import frc.robot.subsystems.Drive;
@@ -148,7 +149,7 @@ public class Robot extends LoggedRobot {
 
     OI.buttonA.whileTrue(new MoveWheelToAngle(drive, 0.5));
     OI.buttonB.whileTrue(new MoveWheelToAngle(drive, -0.5));
-    OI.rt.whileTrue(new IntakeBalls(magIntake, lights));
+    OI.rt.whileTrue(new Intake(magIntake));
     OI.lt.whileTrue(new Outtake(magIntake));
     OI.viewButton.whileTrue(new ZeroNavx(drive));
   }

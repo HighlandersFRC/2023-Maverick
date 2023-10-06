@@ -199,11 +199,11 @@ public class MagIntake extends SubsystemBase {
         stopMagazine();
       } else {
         setFrontMagazine(-0.5);
-        if(!getLowerBackBeamBreak()){
-            setBackMagazine(0.3);
-          } else{
-            setBackMagazine(0.0);
-          }
+        // if(!getLowerBackBeamBreak()){
+        //     setBackMagazine(0.3);
+        //   } else{
+        //     setBackMagazine(0.0);
+        //   }
       }
   }
 
