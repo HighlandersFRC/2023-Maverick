@@ -15,6 +15,7 @@ import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -24,6 +25,7 @@ import frc.robot.commands.Outtake;
 import frc.robot.commands.Intake;
 import frc.robot.commands.ZeroNavx;
 import frc.robot.commands.autos.MoveForwardAuto;
+import frc.robot.commands.autos.OnePieceDock;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Lights;
 import frc.robot.subsystems.MagIntake;
@@ -40,7 +42,7 @@ public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;
 
   private RobotContainer m_robotContainer;
-
+  private SendableChooser<Command> autoChooser = new SendableChooser<>();
   public Peripherals peripherals = new Peripherals();
   public Drive drive = new Drive(peripherals);
   private Logger logger = Logger.getInstance();
@@ -66,6 +68,7 @@ public class Robot extends LoggedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
+
     drive.init();
     peripherals.init();
     logger.addDataReceiver(new WPILOGWriter("/home/lvuser/logs/mostRecent.wpilog"));
@@ -82,6 +85,12 @@ public class Robot extends LoggedRobot {
     }
     this.auto = new MoveForwardAuto(drive, peripherals);
     auto.schedule();
+
+    autoChooser.setDefaultOption("One Piece Dock", new OnePieceDock(drive, peripherals));
+    autoChooser.addOption("3 Piece Red Feeder", auto);
+    autoChooser.addOption("3 Piece Red Bump", auto);
+    autoChooser.addOption("3 Piece Blue Bump", auto);
+    autoChooser.addOption("3 Piece Blue Feeder", auto);
   }
 
   /**
