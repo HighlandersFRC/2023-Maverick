@@ -21,7 +21,7 @@ public final class Constants {
   
   public static final double ROBOT_LENGTH = inchesToMeters(29);
 
-  public static final double ROBOT_WIDTH = inchesToMeters(25);
+  public static final double ROBOT_WIDTH = inchesToMeters(29);
 
   public static final double SWERVE_MODULE_OFFSET = inchesToMeters(2.5);
 
