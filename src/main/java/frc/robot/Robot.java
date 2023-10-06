@@ -91,6 +91,7 @@ public class Robot extends LoggedRobot {
     autoChooser.addOption("3 Piece Red Bump", auto);
     autoChooser.addOption("3 Piece Blue Bump", auto);
     autoChooser.addOption("3 Piece Blue Feeder", auto);
+    // HI
   }
 
   /**
