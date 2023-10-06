@@ -23,13 +23,13 @@ public final class Constants {
 
   public static final double ROBOT_WIDTH = inchesToMeters(29);
 
-  public static final double SWERVE_MODULE_OFFSET = inchesToMeters(2.5);
+  public static final double SWERVE_MODULE_OFFSET = inchesToMeters(3);
 
-  public static final double ROBOT_RADIUS = inchesToMeters(15.375);
+  public static final double ROBOT_RADIUS = inchesToMeters(16);
 
   public static final double GEAR_RATIO = 6.75;
 
-  public static final double STEER_GEAR_RATIO = 150/7;
+  public static final double STEER_GEAR_RATIO = 12.8;
 
   public static final double TOP_SPEED = feetToMeters(20);
 

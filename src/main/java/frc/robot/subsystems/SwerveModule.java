@@ -25,6 +25,7 @@ public class SwerveModule extends SubsystemBase {
   PositionTorqueCurrentFOC positionTorqueFOCRequest = new PositionTorqueCurrentFOC(0, 0, 0, false);
   VelocityTorqueCurrentFOC velocityTorqueFOCRequest = new VelocityTorqueCurrentFOC(0, 0, 0, false);
   VelocityTorqueCurrentFOC velocityTorqueFOCRequestAngleMotor = new VelocityTorqueCurrentFOC(0, 0, 1, false);
+  VelocityTorqueCurrentFOC velocityTorqueFOCRequestDriveMotor = new VelocityTorqueCurrentFOC(0, 0, 1, false);
 
   /** Creates a new SwerveModule. */
   public SwerveModule(int mModuleNum, TalonFX mAngleMotor, TalonFX mDriveMotor, CANcoder mCanCoder) {
@@ -41,16 +42,16 @@ public class SwerveModule extends SubsystemBase {
 
     switch(moduleNumber){
       case 1:
-      angle = (Math.atan2(-width, length)) - Math.PI;
+      angle = (Math.PI / 4) + (Math.PI /2);
       break;
       case 2:
-      angle = Math.atan2(width, length);
+      angle = ((3 * Math.PI) / 4) + ((3 * Math.PI) /2);
       break;
       case 3:
-      angle =  Math.PI + Math.atan2(width, -length);
+      angle =  ((5 * Math.PI) / 4) + (Math.PI /2);
       break;
       case 4:
-      angle =  (2 * Math.PI) + (Math.atan2(-width, -length));
+      angle =  ((7 * Math.PI) / 4) + ((3 * Math.PI) /2);
       break;
       default: 
       angle = 1;
@@ -69,7 +70,7 @@ public class SwerveModule extends SubsystemBase {
     TalonFXConfiguration angleMotorConfig = new TalonFXConfiguration();
     TalonFXConfiguration driveMotorConfig = new TalonFXConfiguration();
 
-    angleMotorConfig.Slot0.kP = 18.5;
+    angleMotorConfig.Slot0.kP = 40.0;
     angleMotorConfig.Slot0.kI = 0.0;
     angleMotorConfig.Slot0.kD = 0.6;
 
@@ -85,10 +86,15 @@ public class SwerveModule extends SubsystemBase {
 
     angleMotorConfig.ClosedLoopRamps.TorqueClosedLoopRampPeriod = 0.1;
 
-    driveMotorConfig.Slot0.kP = 8.0;
+    driveMotorConfig.Slot0.kP = 15.0;
     driveMotorConfig.Slot0.kI = 0.6;
-    driveMotorConfig.Slot0.kD = 0.0;
-    driveMotorConfig.Slot0.kV = 1.6;
+    driveMotorConfig.Slot0.kD = 5.0;
+    driveMotorConfig.Slot0.kV = 3.0;
+
+    driveMotorConfig.Slot1.kP = 3.0;
+    driveMotorConfig.Slot1.kI = 0.0;
+    driveMotorConfig.Slot1.kD = 0.0;
+    driveMotorConfig.Slot1.kV = 0.5;
 
     driveMotorConfig.TorqueCurrent.PeakForwardTorqueCurrent = 75;
     driveMotorConfig.TorqueCurrent.PeakReverseTorqueCurrent = -75;
@@ -222,7 +228,7 @@ public class SwerveModule extends SubsystemBase {
   
   public void drive(Vector vector, double turnValue, double navxAngle){
     if(Math.abs(vector.getI()) < 0.0001 && Math.abs(vector.getJ()) < 0.0001 && Math.abs(turnValue) < 0.001) {
-      driveMotor.setControl(velocityTorqueFOCRequest.withVelocity(0.0));
+      driveMotor.setControl(velocityTorqueFOCRequestDriveMotor.withVelocity(0.0));
       angleMotor.setControl(velocityTorqueFOCRequestAngleMotor.withVelocity(0.0));
     }
     else {
