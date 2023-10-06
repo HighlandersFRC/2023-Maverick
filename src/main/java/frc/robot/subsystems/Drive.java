@@ -169,10 +169,10 @@ public class Drive extends SubsystemBase {
     backRight.init();
     backLeft.init();
 
-    frontRightAngleMotor.setInverted(true);
-    frontLeftAngleMotor.setInverted(true);
-    backRightAngleMotor.setInverted(true);
-    backLeftAngleMotor.setInverted(true);
+    frontRightAngleMotor.setInverted(false);
+    frontLeftAngleMotor.setInverted(false);
+    backRightAngleMotor.setInverted(false);
+    backLeftAngleMotor.setInverted(false);
 
     frontRightDriveMotor.setInverted(false);
     frontLeftDriveMotor.setInverted(false);
