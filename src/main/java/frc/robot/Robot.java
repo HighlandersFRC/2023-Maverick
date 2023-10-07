@@ -34,6 +34,7 @@ import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Lights;
 import frc.robot.subsystems.MagIntake;
 import frc.robot.subsystems.Peripherals;
+import frc.robot.tools.PathAuto;
 import frc.robot.tools.PneumaticsControl;
 
 /**
@@ -43,10 +44,10 @@ import frc.robot.tools.PneumaticsControl;
  * project.
  */
 public class Robot extends LoggedRobot {
-  private Command m_autonomousCommand;
+  private PathAuto m_autonomousCommand;
 
   private RobotContainer m_robotContainer;
-  private SendableChooser<SequentialCommandGroup> autoChooser = new SendableChooser<>();
+  private SendableChooser<PathAuto> autoChooser = new SendableChooser<>();
   public Peripherals peripherals = new Peripherals();
   public Drive drive = new Drive(peripherals);
   private Logger logger = Logger.getInstance();
@@ -62,7 +63,7 @@ public class Robot extends LoggedRobot {
 
   // String fieldSide;
 
-  SequentialCommandGroup auto;
+  PathAuto auto;
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -134,8 +135,6 @@ public class Robot extends LoggedRobot {
     }
 
     // if (autoChooser.getSelected().equals("One Piece Dock")){
-      this.auto = autoChooser.getSelected();
-      auto.schedule();
     //}
     // HI
   }
@@ -180,13 +179,7 @@ public class Robot extends LoggedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
     }
-
-    try {
-      this.auto.schedule();
-    } catch (Exception e){
-      System.out.println("No auto is selected");
-    } 
-    drive.autoInit(this.pathJSON);
+    drive.autoInit(m_autonomousCommand.getStartingPath());
   }
 
   /** This function is called periodically during autonomous. */
