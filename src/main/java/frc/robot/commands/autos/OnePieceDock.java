@@ -40,10 +40,12 @@ public class OnePieceDock extends PathAuto {
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
       new AutonomousOuttake(magIntake, 1),
+      new AutonomousRotate(drive, -90),
       new AutonomousFollower(drive, part1JSON, true),
-      new WaitCommand(0.58),
-      new AutonomousFollower(drive, part2JSON, true),
-      new AutonomousBalance(drive, peripherals)
+      // new WaitCommand(0.58),
+      new AutonomousRotate(drive, 90),
+      new AutonomousFollower(drive, part2JSON, true)
+      // new AutoBalance(drive, peripherals)
     );
   }
   @Override
