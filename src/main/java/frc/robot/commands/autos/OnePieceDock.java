@@ -43,7 +43,7 @@ public class OnePieceDock extends PathAuto {
       new AutonomousFollower(drive, part1JSON, true),
       new WaitCommand(0.58),
       new AutonomousFollower(drive, part2JSON, true),
-      new AutoBalance(drive, peripherals)
+      new AutonomousBalance(drive, peripherals)
     );
   }
   @Override
