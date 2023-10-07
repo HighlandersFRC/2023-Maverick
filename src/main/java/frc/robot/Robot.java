@@ -124,6 +124,8 @@ public class Robot extends LoggedRobot {
     logger.recordOutput("Angle Motor Velocity", drive.getAngleMotorVelocity());
     logger.recordOutput("Navx", Math.toRadians(peripherals.getNavxAngle()));
     logger.recordOutput("Odometry", drive.getOdometry());
+    logger.recordOutput("Chosen Auto", autoChooser.getSelected().getName());
+    logger.recordOutput("pathJSON", pathJSON.toString());
     // logger.recordOutput("Y Value", drive.getFusedOdometryY());
     // logger.recordOutput("Theta Value", drive.getFusedOdometryTheta());
   }

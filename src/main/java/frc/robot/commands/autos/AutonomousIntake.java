@@ -4,6 +4,8 @@
 
 package frc.robot.commands.autos;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.OI;
@@ -13,6 +15,7 @@ public class AutonomousIntake extends CommandBase {
   /** Creates a new Outtake. */
   MagIntake mi;
   double start, delay = 0.5, seconds;
+  Logger logger = Logger.getInstance();
   public AutonomousIntake(MagIntake mi, double seconds) {
     // Seconds = -1 if you don't want it to stop after some amount of time
     this.mi = mi;
@@ -26,6 +29,7 @@ public class AutonomousIntake extends CommandBase {
     start = Timer.getFPGATimestamp();
     mi.setIntakeDown();
     mi.setFrontMagazine(0.1);
+    logger.recordOutput("Intaking?", true);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -44,6 +48,7 @@ public class AutonomousIntake extends CommandBase {
     mi.setIntakeUp();
     mi.setFrontMagazine(0);
     mi.setIntakePercent(0);
+    logger.recordOutput("Intaking?", false);
   }
 
   // Returns true when the command should end.
