@@ -31,8 +31,8 @@ public class OnePieceDock extends PathAuto {
   private String part2Path = "/home/lvuser/deploy/1PieceDockMaverickPart2.json";
   /** Creates a new OnePieceDock. */
   public OnePieceDock(Drive drive, Peripherals peripherals, MagIntake magIntake) {
-    part1JSON = getPathPoints(part1Path);
     part1Read = getPathJSONObject(part1Path);
+    part1JSON = getPathPoints(part1Path);
     part2Read = getPathJSONObject(part2Path);
     part2JSON = getPathPoints(part2Path);
     addRequirements(drive, magIntake);
