@@ -101,7 +101,7 @@ public class Drive extends SubsystemBase {
 
   private double thetaP = 2.0;
   private double thetaI = 0.0;
-  private double thetaD = 0.8;
+  private double thetaD = 1.0;
 
   private PID xPID = new PID(xP, xI, xD);
   private PID yPID = new PID(yP, yI, yD);
@@ -188,8 +188,8 @@ public class Drive extends SubsystemBase {
     // thetaPID.setMinOutput(-(Constants.TOP_SPEED)/(Constants.ROBOT_RADIUS));
     // thetaPID.setMaxOutput((Constants.TOP_SPEED)/(Constants.ROBOT_RADIUS));
 
-    thetaPID.setMinOutput(-0.4);
-    thetaPID.setMaxOutput(0.4);
+    thetaPID.setMinOutput(-0.9);
+    thetaPID.setMaxOutput(0.9);
 
     setDefaultCommand(new DriveDefault(this));
   }
@@ -198,7 +198,8 @@ public class Drive extends SubsystemBase {
     JSONArray firstPoint = pathPoints.getJSONArray(0);
     double firstPointX = firstPoint.getDouble(1);
     double firstPointY = firstPoint.getDouble(2);
-    double firstPointAngle = firstPoint.getDouble(3);
+    // double firstPointAngle = firstPoint.getDouble(3);
+    double firstPointAngle = 0.0;
     SmartDashboard.putNumber("1x", firstPointX);
     SmartDashboard.putNumber("1y", firstPointY);
     SmartDashboard.putNumber("1angle", firstPointAngle);
@@ -437,6 +438,19 @@ public class Drive extends SubsystemBase {
   public double adjustY(double originalX, double originalY){
     double adjustedY = originalY * Math.sqrt((1-(Math.pow(originalX, 2))/2));
     return adjustedY;
+  }
+
+  public void autoTurn(double angle){
+      thetaPID.updatePID(getNavxAngle());
+      thetaPID.setSetPoint(angle);
+      double thetaVel = -thetaPID.getResult();
+
+      Vector vector = new Vector(0.0, 0.0);
+      
+      frontLeft.drive(vector, thetaVel, getNavxAngle());
+      frontRight.drive(vector, thetaVel, getNavxAngle());
+      backLeft.drive(vector, thetaVel, getNavxAngle());
+      backRight.drive(vector, thetaVel, getNavxAngle());
   }
 
   public void autoRobotCentricDrive(Vector stopVector, double turnRadiansPerSec){

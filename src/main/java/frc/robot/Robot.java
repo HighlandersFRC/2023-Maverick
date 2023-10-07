@@ -98,7 +98,7 @@ public class Robot extends LoggedRobot {
 
     
     // if (autoChooser.getSelected().equals("One Piece Dock")){
-      this.auto = autoChooser.getSelected();
+      this.auto = new OnePieceDock(drive, peripherals, magIntake);
       auto.schedule();
     //}
     // HI
@@ -191,7 +191,14 @@ public class Robot extends LoggedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
     }
-    drive.autoInit(m_autonomousCommand.getStartingPath());
+
+    try {
+      this.auto.schedule();
+    } catch (Exception e){
+      System.out.println("No auto is selected");
+    } 
+
+    drive.autoInit(this.pathJSON);
   }
 
   /** This function is called periodically during autonomous. */
