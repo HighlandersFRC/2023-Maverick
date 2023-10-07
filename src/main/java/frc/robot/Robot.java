@@ -27,6 +27,7 @@ import frc.robot.commands.MoveWheelToAngle;
 import frc.robot.commands.Outtake;
 import frc.robot.commands.Intake;
 import frc.robot.commands.ZeroNavx;
+import frc.robot.commands.autos.AutonomousBalance;
 import frc.robot.commands.autos.AutonomousOuttake;
 import frc.robot.commands.autos.MoveForwardAuto;
 import frc.robot.commands.autos.OnePieceDock;
@@ -222,6 +223,7 @@ public class Robot extends LoggedRobot {
     OI.rt.whileTrue(new Intake(magIntake));
     OI.lt.whileTrue(new Outtake(magIntake));
     OI.viewButton.whileTrue(new ZeroNavx(drive));
+    OI.buttonX.onTrue(new AutonomousBalance(drive, peripherals));
   }
 
   /** This function is called periodically during operator control. */

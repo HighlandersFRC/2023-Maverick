@@ -10,7 +10,7 @@ public class AutonomousBalance extends CommandBase {
 
   private Peripherals peripherals;
   private Drive drive;
-  private boolean end = false;
+  private boolean end;
   Vector closerBalanceVector = new Vector(0, -0.25);
   Vector fartherBalanceVector = new Vector(0, 0.25);
   Vector stopVector = new Vector(0.0, 0.0);
@@ -23,13 +23,16 @@ public class AutonomousBalance extends CommandBase {
   }
 
   @Override
-  public void initialize() {}
+  public void initialize() {
+    end = false;
+    System.out.println("Init");
+  }
 
   @Override
   public void execute() {    
-    if (peripherals.getNavxRollOffset()<-10){
+    if (peripherals.getNavxPitch()<-5){
       drive.autoRobotCentricDrive(closerBalanceVector, 0);
-    } else if (peripherals.getNavxRollOffset()>10){
+    } else if (peripherals.getNavxPitch()>5){
       drive.autoRobotCentricDrive(fartherBalanceVector, 0);
     } else {
       drive.autoRobotCentricDrive(stopVector, 0);
@@ -40,6 +43,7 @@ public class AutonomousBalance extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     drive.autoRobotCentricDrive(stopVector, 0);
+    System.out.println("End");
   }
 
   @Override

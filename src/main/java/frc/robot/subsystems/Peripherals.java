@@ -45,6 +45,7 @@ public class Peripherals extends SubsystemBase {
   public void zeroNavx(){
     navx.softResetYaw();
     navx.softResetAngle();
+    navx.softResetPitch();
   }
 
   public void setNavxAngle(double angle) {
@@ -69,6 +70,9 @@ public class Peripherals extends SubsystemBase {
 
   @Override
   public void periodic() {
+    SmartDashboard.putNumber("Roll", getNavxRoll());
+    // SmartDashboard.putNumber("Pitch", navx.currentPitch());
+    navx.currentPitch();
     // This method will be called once per scheduler run
   }
 }

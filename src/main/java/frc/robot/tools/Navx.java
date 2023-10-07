@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class Navx {
   private double originalAngle;
   private double originalYaw;
+  private double originalPitch;
   private AHRS imu;
   /** Creates a new Navx. */
  
@@ -28,8 +29,13 @@ public class Navx {
   }
 
   public double currentAngle() {
-        SmartDashboard.putNumber("navx yaw", -(imu.getAngle() - originalAngle));
-        return -(imu.getAngle() - originalAngle);
+    SmartDashboard.putNumber("navx yaw", -(imu.getAngle() - originalAngle));
+    return -(imu.getAngle() - originalAngle);
+  }
+
+  public double currentPitch(){
+    SmartDashboard.putNumber("navx pitch", (imu.getPitch() - originalPitch));
+    return (imu.getPitch() - originalPitch);
   }
 
   public double getRawAngle() {
@@ -48,9 +54,9 @@ public class Navx {
       return imu.getRoll();
   }
 
-  public double currentPitch() {
-      return imu.getPitch();
-  }
+//   public double currentPitch() {
+//       return imu.getPitch();
+//   }
 
   public double currentRoll() {
       return imu.getRoll();
@@ -103,6 +109,10 @@ public class Navx {
   public void softResetYaw() {
       originalYaw = imu.getYaw();
   }
+
+  public void softResetPitch() {
+    originalPitch = imu.getPitch();
+}
 
   public double getAngleRate() {
       return (imu.getRate());
