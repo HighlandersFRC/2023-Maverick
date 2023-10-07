@@ -25,14 +25,16 @@ import frc.robot.tools.PathAuto;
 public class OnePieceDock extends PathAuto {
   private JSONArray part1JSON;
   private JSONObject part1Read;
+  private String part1Path = "/home/lvuser/deploy/1PieceDockMaverickPart1.json";
   private JSONArray part2JSON;
   private JSONObject part2Read;
+  private String part2Path = "/home/lvuser/deploy/1PieceDockMaverickPart2.json";
   /** Creates a new OnePieceDock. */
   public OnePieceDock(Drive drive, Peripherals peripherals, MagIntake magIntake) {
-    part1Read = getPathJSONObject("/home/lvuser/deploy/1PieceDockMaverickPart1.json");
-    part1JSON = getPathPoints("/home/lvuser/deploy/1PieceDockMaverickPart1.json");
-    part2Read = getPathJSONObject("/home/lvuser/deploy/1PieceDockMaverickPart2.json");
-    part2JSON = getPathPoints("/home/lvuser/deploy/1PieceDockMaverickPart2.json");
+    part1JSON = getPathPoints(part1Path);
+    part1Read = getPathJSONObject(part1Path);
+    part2Read = getPathJSONObject(part2Path);
+    part2JSON = getPathPoints(part2Path);
     addRequirements(drive, magIntake);
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
