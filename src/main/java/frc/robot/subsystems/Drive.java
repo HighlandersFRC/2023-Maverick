@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import org.json.JSONArray;
+import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -111,6 +112,7 @@ public class Drive extends SubsystemBase {
 
   private int lookAheadDistance = 5;
   
+  private Logger logger = Logger.getInstance();
   /** Creates a new SwerveDriveSubsystem. */
   public Drive(Peripherals peripherals) {
     this.peripherals = peripherals;
@@ -203,7 +205,7 @@ public class Drive extends SubsystemBase {
     SmartDashboard.putNumber("1x", firstPointX);
     SmartDashboard.putNumber("1y", firstPointY);
     SmartDashboard.putNumber("1angle", firstPointAngle);
-
+    
     // JSONArray secondPoint = pathPoints.getJSONArray(0);
     // double secondPointX = secondPoint.getDouble(4);
     // double secondPointY = secondPoint.getDouble(5);
@@ -559,7 +561,9 @@ public class Drive extends SubsystemBase {
         SmartDashboard.putNumber("XFF", feedForwardX);
         SmartDashboard.putNumber("YFF", feedForwardY);
         SmartDashboard.putNumber("TFF", feedForwardTheta);
-
+        logger.recordOutput("YFF", feedForwardY);
+        logger.recordOutput("XFF", feedForwardX);
+        logger.recordOutput("TFF", feedForwardTheta);
         xPID.updatePID(currentX);
         yPID.updatePID(currentY);
         thetaPID.updatePID(currentTheta);
@@ -575,6 +579,9 @@ public class Drive extends SubsystemBase {
         SmartDashboard.putNumber("PIDX", xVelNoFF);
         SmartDashboard.putNumber("PIDY", yVelNoFF);
         SmartDashboard.putNumber("PIDT", thetaVelNoFF);
+        logger.recordOutput("PIDX", xVelNoFF);
+        logger.recordOutput("PIDY", yVelNoFF);
+        logger.recordOutput("PIDT", thetaVelNoFF);
 
         double xVel = feedForwardX + xVelNoFF;
         double yVel = feedForwardY + yVelNoFF;
@@ -618,22 +625,29 @@ public class Drive extends SubsystemBase {
     SmartDashboard.putNumber("2 Position", Math.toDegrees(frontLeft.getWheelPosition()));
     SmartDashboard.putNumber("3 Position", Math.toDegrees(backLeft.getWheelPosition()));
     SmartDashboard.putNumber("4 Position", Math.toDegrees(backRight.getWheelPosition()));
+    logger.recordOutput("1 Position", Math.toDegrees(frontRight.getWheelPosition()));
+    logger.recordOutput("2 Position", Math.toDegrees(frontLeft.getWheelPosition()));
+    logger.recordOutput("3 Position", Math.toDegrees(backLeft.getWheelPosition()));
+    logger.recordOutput("4 Position", Math.toDegrees(backRight.getWheelPosition()));
 
-    SmartDashboard.putNumber("1 Falcon", frontRightAngleMotor.getPosition().getValue());
+    logger.recordOutput("1 CanCoder", Constants.rotationsToDegrees(frontRightCanCoder.getAbsolutePosition().getValue()));
+    logger.recordOutput("2 CanCoder", Constants.rotationsToDegrees(frontLeftCanCoder.getAbsolutePosition().getValue()));
+    logger.recordOutput("3 CanCoder", Constants.rotationsToDegrees(backLeftCanCoder.getAbsolutePosition().getValue()));
+    logger.recordOutput("4 CanCoder", Constants.rotationsToDegrees(backRightCanCoder.getAbsolutePosition().getValue()));
 
-    // SmartDashboard.putNumber("1 CanCoder", Constants.rotationsToDegrees(frontRightCanCoder.getAbsolutePosition().getValue()));
-    // SmartDashboard.putNumber("2 CanCoder", Constants.rotationsToDegrees(frontLeftCanCoder.getAbsolutePosition().getValue()));
-    // SmartDashboard.putNumber("3 CanCoder", Constants.rotationsToDegrees(backLeftCanCoder.getAbsolutePosition().getValue()));
-    // SmartDashboard.putNumber("4 CanCoder", Constants.rotationsToDegrees(backRightCanCoder.getAbsolutePosition().getValue()));
-
-    // SmartDashboard.putNumber("1 Speed", frontRight.getWheelSpeed());
-    // SmartDashboard.putNumber("2 Speed", frontLeft.getWheelSpeed());
-    // SmartDashboard.putNumber("3 Speed", backLeft.getWheelSpeed());
-    // SmartDashboard.putNumber("4 Speed", backRight.getWheelSpeed());
+    logger.recordOutput("1 Speed", frontRight.getWheelSpeed());
+    logger.recordOutput("2 Speed", frontLeft.getWheelSpeed());
+    logger.recordOutput("3 Speed", backLeft.getWheelSpeed());
+    logger.recordOutput("4 Speed", backRight.getWheelSpeed());
     // This method will be called once per scheduler run
+
     SmartDashboard.putNumber("Position X", m_odometry.getEstimatedPosition().getX());
     SmartDashboard.putNumber("Position Y", m_odometry.getEstimatedPosition().getY());
     SmartDashboard.putNumber("Position Angle", m_odometry.getEstimatedPosition().getRotation().getDegrees());
+    logger.recordOutput("Position X", m_odometry.getEstimatedPosition().getX());
+    logger.recordOutput("Position Y", m_odometry.getEstimatedPosition().getY());
+    logger.recordOutput("Position Angle", m_odometry.getEstimatedPosition().getRotation().getDegrees());
+
     // SmartDashboard.putNumber("Fused X", getFusedOdometryX());
     // SmartDashboard.putNumber("Fused Y", getFusedOdometryY());
     // SmartDashboard.putNumber("Fused Angle", getFusedOdometryTheta());
