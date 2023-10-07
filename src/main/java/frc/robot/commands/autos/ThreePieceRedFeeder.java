@@ -37,7 +37,7 @@ public class ThreePieceRedFeeder extends PathAuto {
       new AutonomousFollower(drive, part2Array, true),
       new AutonomousOuttake(magIntake, 1),
       new ParallelCommandGroup(
-        new AutonomousIntake(magIntake, 3.5), 
+        new AutonomousIntake(magIntake, 4.5), 
         new AutonomousFollower(drive, part3Array, true)
       ),
       new AutonomousFollower(drive, part4Array, false),
