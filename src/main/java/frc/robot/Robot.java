@@ -46,7 +46,7 @@ public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;
 
   private RobotContainer m_robotContainer;
-  private SendableChooser<Command> autoChooser = new SendableChooser<>();
+  private SendableChooser<SequentialCommandGroup> autoChooser = new SendableChooser<>();
   public Peripherals peripherals = new Peripherals();
   public Drive drive = new Drive(peripherals);
   private Logger logger = Logger.getInstance();
@@ -79,23 +79,64 @@ public class Robot extends LoggedRobot {
     logger.addDataReceiver(new NT4Publisher());
     logger.start();
 
-    try {
-      pathingFile = new File("/home/lvuser/deploy/1PieceDockMaverickPart1.json");
-      FileReader scanner = new FileReader(pathingFile);
-      pathRead = new JSONObject(new JSONTokener(scanner));
-      pathJSON = (JSONArray) pathRead.get("sampled_points");
-    } catch (Exception e) {
-      System.out.println("ERROR WITH PATH FILE " + e);
-    }
-    this.auto = new MoveForwardAuto(drive, peripherals);
-    auto.schedule();
-
     autoChooser.setDefaultOption("One Piece Dock", new OnePieceDock(drive, peripherals, magIntake));
     autoChooser.addOption("3 Piece Red Feeder", auto);
     autoChooser.addOption("3 Piece Red Bump", auto);
     autoChooser.addOption("3 Piece Blue Bump", auto);
     autoChooser.addOption("3 Piece Blue Feeder", auto);
     SmartDashboard.putData(autoChooser);
+
+    if (autoChooser.getSelected().getName() == "One Piece Dock"){
+      try {
+        pathingFile = new File("/home/lvuser/deploy/IcebabyTestAuto.json");
+        FileReader scanner = new FileReader(pathingFile);
+        pathRead = new JSONObject(new JSONTokener(scanner));
+        pathJSON = (JSONArray) pathRead.get("sampled_points");
+      } catch (Exception e) {
+        System.out.println("ERROR WITH PATH FILE " + e);
+      }
+    } else if (autoChooser.getSelected().getName() == "3 Piece Red Feeder"){
+      try {
+        pathingFile = new File("/home/lvuser/deploy/3PieceFeederMaverickPart1.json");
+        FileReader scanner = new FileReader(pathingFile);
+        pathRead = new JSONObject(new JSONTokener(scanner));
+        pathJSON = (JSONArray) pathRead.get("sampled_points");
+      } catch (Exception e) {
+        System.out.println("ERROR WITH PATH FILE " + e);
+      }
+    }else if (autoChooser.getSelected().getName() == "3 Piece Red Bump"){
+      try {
+        pathingFile = new File("/home/lvuser/deploy/3PieceBumpMaverickPart1.json");
+        FileReader scanner = new FileReader(pathingFile);
+        pathRead = new JSONObject(new JSONTokener(scanner));
+        pathJSON = (JSONArray) pathRead.get("sampled_points");
+      } catch (Exception e) {
+        System.out.println("ERROR WITH PATH FILE " + e);
+      }
+    }else if (autoChooser.getSelected().getName() == "3 Piece Blue Bump"){
+      try {
+        pathingFile = new File("/home/lvuser/deploy/3PieceBumpMaverickPart1.json");
+        FileReader scanner = new FileReader(pathingFile);
+        pathRead = new JSONObject(new JSONTokener(scanner));
+        pathJSON = (JSONArray) pathRead.get("sampled_points");
+      } catch (Exception e) {
+        System.out.println("ERROR WITH PATH FILE " + e);
+      }
+    }else if (autoChooser.getSelected().getName() == "3 Piece Blue Feeder"){
+      try {
+        pathingFile = new File("/home/lvuser/deploy/3PieceFeederMaverickPart1.json");
+        FileReader scanner = new FileReader(pathingFile);
+        pathRead = new JSONObject(new JSONTokener(scanner));
+        pathJSON = (JSONArray) pathRead.get("sampled_points");
+      } catch (Exception e) {
+        System.out.println("ERROR WITH PATH FILE " + e);
+      }
+    }
+
+    // if (autoChooser.getSelected().equals("One Piece Dock")){
+      this.auto = autoChooser.getSelected();
+      auto.schedule();
+    //}
     // HI
   }
 
