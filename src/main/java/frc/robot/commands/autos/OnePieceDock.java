@@ -29,10 +29,10 @@ public class OnePieceDock extends PathAuto {
   private JSONObject part2Read;
   /** Creates a new OnePieceDock. */
   public OnePieceDock(Drive drive, Peripherals peripherals, MagIntake magIntake) {
-    part1JSON = getPathPoints("/home/lvuser/deploy/1PieceDockMaverickPart1.json");
     part1Read = getPathJSONObject("/home/lvuser/deploy/1PieceDockMaverickPart1.json");
+    part1JSON = getPathPoints("/home/lvuser/deploy/1PieceDockMaverickPart1.json");
     part2Read = getPathJSONObject("/home/lvuser/deploy/1PieceDockMaverickPart2.json");
-    part2JSON = getPathPoints("/home/lvuser/deploy/1PieceDockMaverickPart1.json");
+    part2JSON = getPathPoints("/home/lvuser/deploy/1PieceDockMaverickPart2.json");
     addRequirements(drive, magIntake);
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());

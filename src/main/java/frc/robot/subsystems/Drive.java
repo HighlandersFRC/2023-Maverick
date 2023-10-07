@@ -99,9 +99,9 @@ public class Drive extends SubsystemBase {
   private double yI = 0.0;
   private double yD = 1.5;
 
-  private double thetaP = 2.6;
-  private double thetaI = 0;
-  private double thetaD = 1.5;
+  private double thetaP = 2.0;
+  private double thetaI = 0.0;
+  private double thetaD = 0.8;
 
   private PID xPID = new PID(xP, xI, xD);
   private PID yPID = new PID(yP, yI, yD);
@@ -185,8 +185,11 @@ public class Drive extends SubsystemBase {
     yPID.setMinOutput(-4.9);
     yPID.setMaxOutput(4.9);
 
-    thetaPID.setMinOutput(-(Constants.TOP_SPEED)/(Constants.ROBOT_RADIUS));
-    thetaPID.setMaxOutput((Constants.TOP_SPEED)/(Constants.ROBOT_RADIUS));
+    // thetaPID.setMinOutput(-(Constants.TOP_SPEED)/(Constants.ROBOT_RADIUS));
+    // thetaPID.setMaxOutput((Constants.TOP_SPEED)/(Constants.ROBOT_RADIUS));
+
+    thetaPID.setMinOutput(-0.4);
+    thetaPID.setMaxOutput(0.4);
 
     setDefaultCommand(new DriveDefault(this));
   }
@@ -456,7 +459,7 @@ public class Drive extends SubsystemBase {
 
     double finalX = adjustedX * Constants.TOP_SPEED;
     double finalY = adjustedY * Constants.TOP_SPEED;
-    double turn = 0.75 * (rightStick * Constants.TOP_SPEED);
+    double turn = 0.6 * (rightStick * Constants.TOP_SPEED);
 
     Vector controllerVector = new Vector(finalX, finalY);
     // controllerVector.i = finalX;
@@ -565,19 +568,19 @@ public class Drive extends SubsystemBase {
 
         double[] velocityArray = new double[3];
 
-        if ((Math.abs(targetX - currentPointX)) < 0.01 && (Math.abs(targetY - currentPointY)) < 0.01 && (Math.abs(targetTheta - currentPointTheta)) < 0.5){
-          velocityArray[0] = 0.0;
-          velocityArray[1] = 0.0;
-          velocityArray[2] = 0.0; 
-        } else {
-          velocityArray[0] = xVel;
-          velocityArray[1] = -yVel;
-          velocityArray[2] = thetaVel;
-        }
+        // if ((Math.abs(targetX - currentPointX)) < 0.01 && (Math.abs(targetY - currentPointY)) < 0.01 && (Math.abs(targetTheta - currentPointTheta)) < 0.5){
+        //   velocityArray[0] = 0.0;
+        //   velocityArray[1] = 0.0;
+        //   velocityArray[2] = 0.0; 
+        // } else {
+        //   velocityArray[0] = xVel;
+        //   velocityArray[1] = -yVel;
+        //   velocityArray[2] = thetaVel;
+        // }
 
-        // velocityArray[0] = xVel;
-        // velocityArray[1] = -yVel;
-        // velocityArray[2] = thetaVel;
+        velocityArray[0] = xVel;
+        velocityArray[1] = -yVel;
+        velocityArray[2] = thetaVel;
 
         // System.out.println("Target Point: " + targetPoint);
         System.out.println("Time: " + currentPointTime + " X: " + xVel + " Y: " + -yVel + " Theta: " + thetaVel);
