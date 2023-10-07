@@ -15,7 +15,10 @@ import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
+import edu.wpi.first.networktables.NTSendableBuilder;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -24,6 +27,7 @@ import frc.robot.commands.MoveWheelToAngle;
 import frc.robot.commands.Outtake;
 import frc.robot.commands.Intake;
 import frc.robot.commands.ZeroNavx;
+import frc.robot.commands.autos.AutonomousOuttake;
 import frc.robot.commands.autos.MoveForwardAuto;
 import frc.robot.commands.autos.OnePieceDock;
 import frc.robot.subsystems.Drive;
@@ -76,7 +80,7 @@ public class Robot extends LoggedRobot {
     logger.start();
 
     try {
-      pathingFile = new File("/home/lvuser/deploy/IcebabyTestAuto.json");
+      pathingFile = new File("/home/lvuser/deploy/1PieceDockMaverickPart1.json");
       FileReader scanner = new FileReader(pathingFile);
       pathRead = new JSONObject(new JSONTokener(scanner));
       pathJSON = (JSONArray) pathRead.get("sampled_points");
@@ -86,11 +90,12 @@ public class Robot extends LoggedRobot {
     this.auto = new MoveForwardAuto(drive, peripherals);
     auto.schedule();
 
-    autoChooser.setDefaultOption("One Piece Dock", new OnePieceDock(drive, peripherals));
+    autoChooser.setDefaultOption("One Piece Dock", new OnePieceDock(drive, peripherals, magIntake));
     autoChooser.addOption("3 Piece Red Feeder", auto);
     autoChooser.addOption("3 Piece Red Bump", auto);
     autoChooser.addOption("3 Piece Blue Bump", auto);
     autoChooser.addOption("3 Piece Blue Feeder", auto);
+    SmartDashboard.putData(autoChooser);
     // HI
   }
 
@@ -128,7 +133,7 @@ public class Robot extends LoggedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    m_autonomousCommand = autoChooser.getSelected();
 
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {
