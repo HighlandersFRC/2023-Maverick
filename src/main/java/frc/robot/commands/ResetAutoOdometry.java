@@ -28,7 +28,7 @@ public class ResetAutoOdometry extends CommandBase {
   @Override
   public void execute() {
     System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^" + pathJSON);
-    drive.autoInit(pathJSON);
+    // drive.autoInit(pathJSON);
   }
 
   // Called once the command ends or is interrupted.

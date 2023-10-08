@@ -100,15 +100,15 @@ public class Drive extends SubsystemBase {
   private double yI = 0.0;
   private double yD = 0.5;
 
-  private double thetaP = 2.7;
+  private double thetaP = 2.5;
   private double thetaI = 0.0;
-  private double thetaD = 1.0;
+  private double thetaD = 0.3;
 
   private PID xPID = new PID(xP, xI, xD);
   private PID yPID = new PID(yP, yI, yD);
   private PID thetaPID = new PID(thetaP, thetaI, thetaD);
 
-  // private String fieldSide = "blue";
+  private String fieldSide = "blue";
 
   private int lookAheadDistance = 5;
   
@@ -203,10 +203,11 @@ public class Drive extends SubsystemBase {
     setDefaultCommand(new DriveDefault(this));
   }
 
-  public void autoInit(JSONArray pathPoints){
+  public void autoInit(JSONArray pathPoints, String fieldSide){
     JSONArray firstPoint = pathPoints.getJSONArray(0);
     double firstPointX = firstPoint.getDouble(1);
     double firstPointY = firstPoint.getDouble(2);
+    this.fieldSide = fieldSide;
     // double firstPointAngle = firstPoint.getDouble(3);
     double firstPointAngle = 0.0;
     SmartDashboard.putNumber("1x", firstPointX);
@@ -237,10 +238,11 @@ public class Drive extends SubsystemBase {
     // SmartDashboard.putNumber("4y", fourthPointY);
     // SmartDashboard.putNumber("4angle", fourthPointAngle);
 
-    // if(getFieldSide() == "blue") {
-    //   firstPointX = Constants.FIELD_LENGTH - firstPointX;
-    //   firstPointAngle = Math.PI - firstPointAngle;
-    // }
+    if(getFieldSide() == "red") {
+      firstPointX = Constants.FIELD_LENGTH - firstPointX;
+      firstPointY = Constants.FIELD_WIDTH - firstPointY;
+      // firstPointAngle = Math.PI - firstPointAngle;
+    }
         
     peripherals.setNavxAngle(Math.toDegrees(firstPointAngle));
     SwerveModulePosition[] swerveModulePositions = new SwerveModulePosition[4];
@@ -275,13 +277,13 @@ public class Drive extends SubsystemBase {
     // updateOdometryFusedArray();
   }
 
-  // public void setFieldSide(String side){
-  //   fieldSide = side;
-  // }
+  public void setFieldSide(String side){
+    fieldSide = side;
+  }
 
-  // public String getFieldSide(){
-  //   return fieldSide;
-  // }
+  public String getFieldSide(){
+    return fieldSide;
+  }
 
   public double getCurrentTime(){
     return currentTime;
@@ -540,10 +542,11 @@ public class Drive extends SubsystemBase {
         double targetY = targetPoint.getDouble(2);
         double targetTheta = targetPoint.getDouble(3);
 
-        // if(getFieldSide() == "blue") {
-        //     targetX = Constants.FIELD_LENGTH - targetX;
-        //     targetTheta = Math.PI - targetTheta;
-        // }
+        if(getFieldSide() == "red") {
+            targetX = Constants.FIELD_LENGTH - targetX;
+            targetY = Constants.FIELD_WIDTH - targetY;
+            // targetTheta = Math.PI - targetTheta;
+        }
 
         // if (targetTheta - currentTheta > Math.PI){
         //     targetTheta -= 2 * Math.PI;
@@ -556,10 +559,11 @@ public class Drive extends SubsystemBase {
         double currentPointY = currentPoint.getDouble(2);
         double currentPointTheta = currentPoint.getDouble(3);
 
-        // if(getFieldSide() == "blue") {
-        //     currentPointX = Constants.FIELD_LENGTH - currentPointX;
-        //     currentPointTheta = Math.PI - currentPointTheta;
-        // }
+        if(getFieldSide() == "red") {
+            currentPointX = Constants.FIELD_LENGTH - currentPointX;
+            currentPointY = Constants.FIELD_WIDTH - currentPointY;
+            // currentPointTheta = Math.PI - currentPointTheta;
+        }
 
         double feedForwardX = (targetX - currentPointX)/(targetTime - currentPointTime);
         double feedForwardY = (targetY - currentPointY)/(targetTime - currentPointTime);

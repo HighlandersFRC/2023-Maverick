@@ -64,7 +64,8 @@ public class Robot extends LoggedRobot {
   JSONObject pathRead;
   JSONArray pathJSON;
 
-  // String fieldSide;
+  String fieldSide;
+  SendableChooser<String> sideChooser = new SendableChooser<>();
 
   PathAuto auto;
   /**
@@ -88,21 +89,14 @@ public class Robot extends LoggedRobot {
     autoChooser.addOption("3 Piece Red Bump", auto);
     autoChooser.addOption("3 Piece Blue Bump", auto);
     autoChooser.addOption("3 Piece Blue Feeder", auto);
+    autoChooser.addOption("Test Auto", new MoveForwardAuto(drive, peripherals));
     SmartDashboard.putData(autoChooser);
 
-    try {
-      pathingFile = new File("/home/lvuser/deploy/3PieceBumpMaverickPart1.json");
-      FileReader scanner = new FileReader(pathingFile);
-      pathRead = new JSONObject(new JSONTokener(scanner));
-      pathJSON = (JSONArray) pathRead.get("sampled_points");
-    } catch (Exception e) {
-       System.out.println("ERROR WITH PATH FILE " + e);
-    }
-
-    
+    sideChooser.setDefaultOption("Blue", "blue");
+    sideChooser.addOption("Red", "red");
+    SmartDashboard.putData(sideChooser);
     // if (autoChooser.getSelected().equals("One Piece Dock")){
-      this.auto = new ThreePieceRedFeeder(drive, magIntake, peripherals);
-      auto.schedule();
+      
     //}
     // HI
   }
@@ -128,7 +122,6 @@ public class Robot extends LoggedRobot {
     logger.recordOutput("Navx", Math.toRadians(peripherals.getNavxAngle()));
     logger.recordOutput("Odometry", drive.getOdometry());
     logger.recordOutput("Chosen Auto", autoChooser.getSelected().getName());
-    logger.recordOutput("pathJSON", pathJSON.toString());
     // logger.recordOutput("Y Value", drive.getFusedOdometryY());
     // logger.recordOutput("Theta Value", drive.getFusedOdometryTheta());
   }
@@ -193,17 +186,13 @@ public class Robot extends LoggedRobot {
     // m_autonomousCommand = autoChooser.getSelected();
 
     // schedule the autonomous command (example)
-    if (m_autonomousCommand != null) {
-      m_autonomousCommand.schedule();
-    }
-
-    try {
-      this.auto.schedule();
-    } catch (Exception e){
-      System.out.println("No auto is selected");
-    } 
-
-    drive.autoInit(this.pathJSON);
+    this.auto = autoChooser.getSelected();
+    auto.schedule();
+    this.pathJSON = auto.getStartingPath();
+    this.fieldSide = sideChooser.getSelected();
+    drive.setFieldSide(fieldSide);
+    drive.autoInit(this.pathJSON, this.fieldSide);
+    logger.recordOutput("pathJSON", pathJSON.toString());
   }
 
   /** This function is called periodically during autonomous. */
