@@ -11,8 +11,8 @@ public class AutonomousBalance extends CommandBase {
   private Peripherals peripherals;
   private Drive drive;
   private boolean end;
-  Vector closerBalanceVector = new Vector(0, -0.25);
-  Vector fartherBalanceVector = new Vector(0, 0.25);
+  Vector closerBalanceVector = new Vector(0, -0.3);
+  Vector fartherBalanceVector = new Vector(0, 0.3);
   Vector stopVector = new Vector(0.0, 0.0);
 
   Vector balanceVector;
@@ -42,7 +42,8 @@ public class AutonomousBalance extends CommandBase {
 
   @Override
   public void end(boolean interrupted) {
-    drive.autoRobotCentricDrive(stopVector, 0);
+    // drive.autoRobotCentricDrive(stopVector, 0);
+    drive.lockWheels();
     System.out.println("End");
   }
 

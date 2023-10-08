@@ -100,9 +100,9 @@ public class Drive extends SubsystemBase {
   private double yI = 0.0;
   private double yD = 1.5;
 
-  private double thetaP = 2.0;
+  private double thetaP = 2.7;
   private double thetaI = 0.0;
-  private double thetaD = 0.8;
+  private double thetaD = 1.0;
 
   private PID xPID = new PID(xP, xI, xD);
   private PID yPID = new PID(yP, yI, yD);
@@ -158,6 +158,13 @@ public class Drive extends SubsystemBase {
     return peripherals.getNavxRoll();
   }
 
+  public void lockWheels(){
+    frontRight.setWheelPID((Math.PI / 4), 0.0);
+    frontLeft.setWheelPID(((3 * Math.PI) / 4), 0.0);
+    backLeft.setWheelPID((Math.PI / 4), 0.0);
+    backRight.setWheelPID(((3 * Math.PI) / 4), 0.0);
+  }
+
   public void setWheelsStraight(){
     frontRight.setWheelPID(0, 0.0);
     frontLeft.setWheelPID(0, 0.0);
@@ -190,8 +197,8 @@ public class Drive extends SubsystemBase {
     // thetaPID.setMinOutput(-(Constants.TOP_SPEED)/(Constants.ROBOT_RADIUS));
     // thetaPID.setMaxOutput((Constants.TOP_SPEED)/(Constants.ROBOT_RADIUS));
 
-    thetaPID.setMinOutput(-0.4);
-    thetaPID.setMaxOutput(0.4);
+    thetaPID.setMinOutput(-0.6);
+    thetaPID.setMaxOutput(0.6);
 
     setDefaultCommand(new DriveDefault(this));
   }
