@@ -31,6 +31,7 @@ import frc.robot.commands.autos.AutonomousBalance;
 import frc.robot.commands.autos.AutonomousOuttake;
 import frc.robot.commands.autos.MoveForwardAuto;
 import frc.robot.commands.autos.OnePieceDock;
+import frc.robot.commands.autos.ThreePieceRedFeeder;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Lights;
 import frc.robot.subsystems.MagIntake;
@@ -82,14 +83,14 @@ public class Robot extends LoggedRobot {
     logger.start();
 
     autoChooser.setDefaultOption("One Piece Dock", new OnePieceDock(drive, peripherals, magIntake));
-    autoChooser.addOption("3 Piece Red Feeder", auto);
+    autoChooser.addOption("3 Piece Red Feeder", new ThreePieceRedFeeder(drive, magIntake, peripherals));
     autoChooser.addOption("3 Piece Red Bump", auto);
     autoChooser.addOption("3 Piece Blue Bump", auto);
     autoChooser.addOption("3 Piece Blue Feeder", auto);
     SmartDashboard.putData(autoChooser);
 
     try {
-      pathingFile = new File("/home/lvuser/deploy/1PieceDockMaverickPart1.json");
+      pathingFile = new File("/home/lvuser/deploy/3PieceBumpMaverickPart1.json");
       FileReader scanner = new FileReader(pathingFile);
       pathRead = new JSONObject(new JSONTokener(scanner));
       pathJSON = (JSONArray) pathRead.get("sampled_points");
@@ -99,7 +100,7 @@ public class Robot extends LoggedRobot {
 
     
     // if (autoChooser.getSelected().equals("One Piece Dock")){
-      this.auto = new OnePieceDock(drive, peripherals, magIntake);
+      this.auto = new ThreePieceRedFeeder(drive, magIntake, peripherals);
       auto.schedule();
     //}
     // HI

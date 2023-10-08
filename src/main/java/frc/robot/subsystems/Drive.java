@@ -92,13 +92,13 @@ public class Drive extends SubsystemBase {
   double setAngle;
   double diffAngle;
 
-  private double xP = 4.0;
+  private double xP = 1.0;
   private double xI = 0.0;
-  private double xD = 1.5;
+  private double xD = 0.5;
 
-  private double yP = 4.0;
+  private double yP = 1.0;
   private double yI = 0.0;
-  private double yD = 1.5;
+  private double yD = 0.5;
 
   private double thetaP = 2.7;
   private double thetaI = 0.0;
@@ -596,19 +596,19 @@ public class Drive extends SubsystemBase {
 
         double[] velocityArray = new double[3];
 
-        // if ((Math.abs(targetX - currentPointX)) < 0.01 && (Math.abs(targetY - currentPointY)) < 0.01 && (Math.abs(targetTheta - currentPointTheta)) < 0.5){
-        //   velocityArray[0] = 0.0;
-        //   velocityArray[1] = 0.0;
-        //   velocityArray[2] = 0.0; 
-        // } else {
-        //   velocityArray[0] = xVel;
-        //   velocityArray[1] = -yVel;
-        //   velocityArray[2] = thetaVel;
-        // }
+        if ((Math.abs(targetX - currentPointX)) < 0.01 && (Math.abs(targetY - currentPointY)) < 0.01 && (Math.abs(targetTheta - currentPointTheta)) < 0.5){
+          velocityArray[0] = 0.0;
+          velocityArray[1] = 0.0;
+          velocityArray[2] = 0.0; 
+        } else {
+          velocityArray[0] = xVel;
+          velocityArray[1] = -yVel;
+          velocityArray[2] = thetaVel;
+        }
 
-        velocityArray[0] = xVel;
-        velocityArray[1] = -yVel;
-        velocityArray[2] = thetaVel;
+        // velocityArray[0] = xVel;
+        // velocityArray[1] = -yVel;
+        // velocityArray[2] = thetaVel;
 
         // System.out.println("Target Point: " + targetPoint);
         System.out.println("Time: " + currentPointTime + " X: " + xVel + " Y: " + -yVel + " Theta: " + thetaVel);

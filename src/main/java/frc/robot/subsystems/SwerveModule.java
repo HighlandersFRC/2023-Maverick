@@ -70,7 +70,7 @@ public class SwerveModule extends SubsystemBase {
     TalonFXConfiguration angleMotorConfig = new TalonFXConfiguration();
     TalonFXConfiguration driveMotorConfig = new TalonFXConfiguration();
 
-    angleMotorConfig.Slot0.kP = 40.0;
+    angleMotorConfig.Slot0.kP = 50.0;
     angleMotorConfig.Slot0.kI = 0.0;
     angleMotorConfig.Slot0.kD = 0.6;
 
@@ -86,16 +86,27 @@ public class SwerveModule extends SubsystemBase {
 
     angleMotorConfig.ClosedLoopRamps.TorqueClosedLoopRampPeriod = 0.1;
 
-    driveMotorConfig.Slot0.kP = 15.0;
-    driveMotorConfig.Slot0.kI = 0.6;
-    driveMotorConfig.Slot0.kD = 5.0;
-    driveMotorConfig.Slot0.kV = 3.0;
+    if (moduleNumber == 2 || moduleNumber == 3){
+      driveMotorConfig.Slot0.kP = 16.0;
+      driveMotorConfig.Slot0.kI = 0.6;
+      driveMotorConfig.Slot0.kD = 4.0;
+      driveMotorConfig.Slot0.kV = 3.0;
 
-    driveMotorConfig.Slot1.kP = 3.0;
-    driveMotorConfig.Slot1.kI = 0.0;
-    driveMotorConfig.Slot1.kD = 0.0;
-    driveMotorConfig.Slot1.kV = 0.5;
+      driveMotorConfig.Slot1.kP = 3.0;
+      driveMotorConfig.Slot1.kI = 0.0;
+      driveMotorConfig.Slot1.kD = 0.0;
+      driveMotorConfig.Slot1.kV = 0.5;
+    } else {
+      driveMotorConfig.Slot0.kP = 15.0;
+      driveMotorConfig.Slot0.kI = 0.6;
+      driveMotorConfig.Slot0.kD = 4.0;
+      driveMotorConfig.Slot0.kV = 3.0;
 
+      driveMotorConfig.Slot1.kP = 3.0;
+      driveMotorConfig.Slot1.kI = 0.0;
+      driveMotorConfig.Slot1.kD = 0.0;
+      driveMotorConfig.Slot1.kV = 0.5;
+    }
     driveMotorConfig.TorqueCurrent.PeakForwardTorqueCurrent = 75;
     driveMotorConfig.TorqueCurrent.PeakReverseTorqueCurrent = -75;
 
