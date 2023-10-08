@@ -14,7 +14,7 @@ import frc.robot.subsystems.MagIntake;
 public class AutonomousIntake extends CommandBase {
   /** Creates a new Outtake. */
   MagIntake mi;
-  double start, delay = 0.5, seconds;
+  double start, delay = 0.3, seconds;
   Logger logger = Logger.getInstance();
   public AutonomousIntake(MagIntake mi, double seconds) {
     // Seconds = -1 if you don't want it to stop after some amount of time
