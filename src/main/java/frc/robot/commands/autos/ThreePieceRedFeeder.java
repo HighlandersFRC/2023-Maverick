@@ -19,7 +19,7 @@ import frc.robot.tools.PathAuto;
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class ThreePieceRedFeeder extends PathAuto {
   /** Creates a new ThreePieceRedFeeder. */
-  String part1Path, part2Path, part3Path, part4Path;
+  String part1Path = "/home/lvuser/deploy/3PieceBumpMaverickPart1.json", part2Path = "/home/lvuser/deploy/3PieceBumpMaverickPart2.json", part3Path =  "/home/lvuser/deploy/3PieceBumpMaverickPart3.json", part4Path =  "/home/lvuser/deploy/3PieceBumpMaverickPart4.json";
   JSONArray part1Array, part2Array, part3Array, part4Array;
   public ThreePieceRedFeeder(Drive drive, MagIntake magIntake, Peripherals peripherals) {
     // Add your commands in the addCommands() call, e.g.
@@ -31,13 +31,13 @@ public class ThreePieceRedFeeder extends PathAuto {
     addCommands(
       new AutonomousOuttake(magIntake, 1),
       new ParallelCommandGroup(
-        new AutonomousIntake(magIntake, 3.5), 
+        new AutonomousIntake(magIntake, 2.5), 
         new AutonomousFollower(drive, part1Array, true)
       ),
       new AutonomousFollower(drive, part2Array, true),
       new AutonomousOuttake(magIntake, 1),
       new ParallelCommandGroup(
-        new AutonomousIntake(magIntake, 4.5), 
+        new AutonomousIntake(magIntake, 3.5), 
         new AutonomousFollower(drive, part3Array, true)
       ),
       new AutonomousFollower(drive, part4Array, false),
