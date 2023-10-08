@@ -17,11 +17,11 @@ import frc.robot.tools.PathAuto;
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class ThreePieceRedFeeder extends PathAuto {
+public class ThreePieceFeeder extends PathAuto {
   /** Creates a new ThreePieceRedFeeder. */
-  String part1Path = "/home/lvuser/deploy/3PieceBumpMaverickPart1.json", part2Path = "/home/lvuser/deploy/3PieceBumpMaverickPart2.json";
+  String part1Path = "/home/lvuser/deploy/3PieceFeederMaverickPart1.json", part2Path = "/home/lvuser/deploy/3PieceFeederMaverickPart2.json";
   JSONArray part1Array, part2Array;
-  public ThreePieceRedFeeder(Drive drive, MagIntake magIntake, Peripherals peripherals) {
+  public ThreePieceFeeder(Drive drive, MagIntake magIntake, Peripherals peripherals) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     part1Array = getPathPoints(part1Path);
@@ -32,12 +32,12 @@ public class ThreePieceRedFeeder extends PathAuto {
         new AutonomousIntake(magIntake, 5), 
         new AutonomousFollower(drive, part1Array, true)
       ),
-      new AutonomousOuttake(magIntake, 1),
-      new ParallelCommandGroup(
-        new AutonomousIntake(magIntake, 7), 
-        new AutonomousFollower(drive, part2Array, true)
-      ),
       new AutonomousOuttake(magIntake, 1)
+      // new ParallelCommandGroup(
+      //   new AutonomousIntake(magIntake, 7), 
+      //   new AutonomousFollower(drive, part2Array, true)
+      // ),
+      // new AutonomousOuttake(magIntake, 1)
     );
   }
   public JSONArray getStartingPath(){

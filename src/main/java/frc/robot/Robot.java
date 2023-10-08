@@ -32,7 +32,8 @@ import frc.robot.commands.autos.AutonomousIntake;
 import frc.robot.commands.autos.AutonomousOuttake;
 import frc.robot.commands.autos.MoveForwardAuto;
 import frc.robot.commands.autos.OnePieceDock;
-import frc.robot.commands.autos.ThreePieceRedFeeder;
+import frc.robot.commands.autos.ThreePieceBump;
+import frc.robot.commands.autos.ThreePieceFeeder;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Lights;
 import frc.robot.subsystems.MagIntake;
@@ -85,10 +86,8 @@ public class Robot extends LoggedRobot {
     logger.start();
 
     autoChooser.setDefaultOption("One Piece Dock", new OnePieceDock(drive, peripherals, magIntake));
-    autoChooser.addOption("3 Piece Red Feeder", new ThreePieceRedFeeder(drive, magIntake, peripherals));
-    autoChooser.addOption("3 Piece Red Bump", auto);
-    autoChooser.addOption("3 Piece Blue Bump", auto);
-    autoChooser.addOption("3 Piece Blue Feeder", auto);
+    autoChooser.addOption("3 Piece Feeder", new ThreePieceFeeder(drive, magIntake, peripherals));
+    // autoChooser.addOption("3 Piece Bump", auto);
     autoChooser.addOption("Test Auto", new MoveForwardAuto(drive, peripherals));
     SmartDashboard.putData(autoChooser);
 

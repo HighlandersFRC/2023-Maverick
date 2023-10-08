@@ -19,7 +19,7 @@ import frc.robot.subsystems.Peripherals;
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class ThreePieceBlueFeeder extends SequentialCommandGroup {
+public class ThreePieceBump extends SequentialCommandGroup {
   private File part1File;
   private JSONArray part1JSON;
   private JSONObject part1Read;
@@ -36,8 +36,8 @@ public class ThreePieceBlueFeeder extends SequentialCommandGroup {
   private JSONArray part4JSON;
   private JSONObject part4Read;
 
-  /** Creates a new ThreePieceBlueFeeder. */
-  public ThreePieceBlueFeeder(Drive drive, Peripherals peripherals, MagIntake magIntake) {
+  /** Creates a new ThreePieceBlueBump. */
+  public ThreePieceBump(Drive drive, Peripherals peripherals, MagIntake magIntake) {
     try {
       part1File = new File("/home/lvuser/deploy/1PieceDockMaverickPart1.json");
       FileReader scanner = new FileReader(part1File);
@@ -62,10 +62,12 @@ public class ThreePieceBlueFeeder extends SequentialCommandGroup {
     catch(Exception e) {
       System.out.println("ERROR WITH PATH FILE " + e);
     }
-    
+
     addRequirements(drive, magIntake);
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
-    addCommands();
+    addCommands(
+
+    );
   }
 }
