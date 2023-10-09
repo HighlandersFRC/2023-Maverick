@@ -243,6 +243,10 @@ public class Drive extends SubsystemBase {
       firstPointY = Constants.FIELD_WIDTH - firstPointY;
       // firstPointAngle = Math.PI - firstPointAngle;
     }
+
+    if(getFieldSide() == "blue") {
+      firstPointX = Constants.FIELD_LENGTH - firstPointX;
+    }
         
     peripherals.setNavxAngle(Math.toDegrees(firstPointAngle));
     SwerveModulePosition[] swerveModulePositions = new SwerveModulePosition[4];
@@ -548,6 +552,10 @@ public class Drive extends SubsystemBase {
             // targetTheta = Math.PI - targetTheta;
         }
 
+        if(getFieldSide() == "blue") {
+          targetX = Constants.FIELD_LENGTH - targetX;
+        }
+
         // if (targetTheta - currentTheta > Math.PI){
         //     targetTheta -= 2 * Math.PI;
         // } else if (targetTheta - currentTheta < -Math.PI){
@@ -563,6 +571,10 @@ public class Drive extends SubsystemBase {
             currentPointX = Constants.FIELD_LENGTH - currentPointX;
             currentPointY = Constants.FIELD_WIDTH - currentPointY;
             // currentPointTheta = Math.PI - currentPointTheta;
+        }
+
+        if(getFieldSide() == "blue") {
+          currentPointX = Constants.FIELD_LENGTH - currentPointX;
         }
 
         double feedForwardX = (targetX - currentPointX)/(targetTime - currentPointTime);
