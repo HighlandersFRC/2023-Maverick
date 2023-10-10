@@ -87,7 +87,7 @@ public class Robot extends LoggedRobot {
 
     autoChooser.setDefaultOption("One Piece Dock", new OnePieceDock(drive, peripherals, magIntake));
     autoChooser.addOption("3 Piece Feeder", new ThreePieceFeeder(drive, magIntake, peripherals));
-    // autoChooser.addOption("3 Piece Bump", auto);
+    autoChooser.addOption("3 Piece Bump", new ThreePieceBump(drive, peripherals, magIntake));
     autoChooser.addOption("Test Auto", new MoveForwardAuto(drive, peripherals));
     SmartDashboard.putData(autoChooser);
 

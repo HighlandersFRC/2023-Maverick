@@ -238,14 +238,14 @@ public class Drive extends SubsystemBase {
     // SmartDashboard.putNumber("4y", fourthPointY);
     // SmartDashboard.putNumber("4angle", fourthPointAngle);
 
-    if(getFieldSide() == "red") {
-      firstPointX = Constants.FIELD_LENGTH - firstPointX;
-      firstPointY = Constants.FIELD_WIDTH - firstPointY;
-      // firstPointAngle = Math.PI - firstPointAngle;
-    }
-
     if(getFieldSide() == "blue") {
       firstPointX = Constants.FIELD_LENGTH - firstPointX;
+      // firstPointY = Constants.FIELD_WIDTH - firstPointY;
+      firstPointAngle = Math.PI - firstPointAngle;
+    }
+
+    if(getFieldSide() == "red") {
+
     }
         
     peripherals.setNavxAngle(Math.toDegrees(firstPointAngle));
@@ -546,35 +546,35 @@ public class Drive extends SubsystemBase {
         double targetY = targetPoint.getDouble(2);
         double targetTheta = targetPoint.getDouble(3);
 
-        if(getFieldSide() == "red") {
-            targetX = Constants.FIELD_LENGTH - targetX;
-            targetY = Constants.FIELD_WIDTH - targetY;
-            // targetTheta = Math.PI - targetTheta;
-        }
-
         if(getFieldSide() == "blue") {
-          targetX = Constants.FIELD_LENGTH - targetX;
+            targetX = Constants.FIELD_LENGTH - targetX;
+            // targetY = Constants.FIELD_WIDTH - targetY;
+            targetTheta = Math.PI - targetTheta;
         }
 
-        // if (targetTheta - currentTheta > Math.PI){
-        //     targetTheta -= 2 * Math.PI;
-        // } else if (targetTheta - currentTheta < -Math.PI){
-        //     targetTheta += 2 * Math.PI;
-        // }
+        if(getFieldSide() == "red") {
+          // targetX = Constants.FIELD_LENGTH - targetX;
+        }
+
+        if (targetTheta - currentTheta > Math.PI){
+            targetTheta -= 2 * Math.PI;
+        } else if (targetTheta - currentTheta < -Math.PI){
+            targetTheta += 2 * Math.PI;
+        }
 
         double currentPointTime = currentPoint.getDouble(0);
         double currentPointX = currentPoint.getDouble(1);
         double currentPointY = currentPoint.getDouble(2);
         double currentPointTheta = currentPoint.getDouble(3);
 
-        if(getFieldSide() == "red") {
+        if(getFieldSide() == "blue") {
             currentPointX = Constants.FIELD_LENGTH - currentPointX;
-            currentPointY = Constants.FIELD_WIDTH - currentPointY;
-            // currentPointTheta = Math.PI - currentPointTheta;
+            // currentPointY = Constants.FIELD_WIDTH - currentPointY;
+            currentPointTheta = Math.PI - currentPointTheta;
         }
 
-        if(getFieldSide() == "blue") {
-          currentPointX = Constants.FIELD_LENGTH - currentPointX;
+        if(getFieldSide() == "red") {
+          // currentPointX = Constants.FIELD_LENGTH - currentPointX;
         }
 
         double feedForwardX = (targetX - currentPointX)/(targetTime - currentPointTime);
