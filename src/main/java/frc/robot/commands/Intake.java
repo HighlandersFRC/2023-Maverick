@@ -53,6 +53,6 @@ public class Intake extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return !OI.rt.getAsBoolean();
+    return !OI.driverRT.getAsBoolean();
   }
 }

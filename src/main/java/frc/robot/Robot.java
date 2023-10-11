@@ -115,14 +115,19 @@ public class Robot extends LoggedRobot {
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
     peripherals.getNavxAngle();
+    //Logging Swerve Module States
     logger.recordOutput("Swerve Module States", drive.getModuleStates());
     logger.recordOutput("Swerve Module Setpoints", drive.getModuleSetpoints());
-    logger.recordOutput("Angle Motor Velocity", drive.getAngleMotorVelocity());
+    // Logging NavX
     logger.recordOutput("Navx", Math.toRadians(peripherals.getNavxAngle()));
+    // Logging Odometry
     logger.recordOutput("Odometry", drive.getOdometry());
+    // Logging chosen auto
     logger.recordOutput("Chosen Auto", autoChooser.getSelected().getName());
-    // logger.recordOutput("Y Value", drive.getFusedOdometryY());
-    // logger.recordOutput("Theta Value", drive.getFusedOdometryTheta());
+    // Logging fieldside
+    logger.recordOutput("fieldSide", fieldSide);
+    // Logging Compressor Current
+    logger.recordOutput("Compressor Current", pneumatics.getCompressorCurrent());
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
@@ -208,13 +213,13 @@ public class Robot extends LoggedRobot {
       m_autonomousCommand.cancel();
     }
 
-    OI.buttonA.whileTrue(new MoveWheelToAngle(drive, 0.5));
-    OI.buttonB.whileTrue(new MoveWheelToAngle(drive, -0.5));
-    OI.buttonY.whileTrue(new AutonomousIntake(magIntake, 1));
-    OI.rt.whileTrue(new Intake(magIntake));
-    OI.lt.whileTrue(new Outtake(magIntake));
-    OI.viewButton.whileTrue(new ZeroNavx(drive));
-    OI.buttonX.onTrue(new AutonomousBalance(drive, peripherals));
+    OI.driverA.whileTrue(new MoveWheelToAngle(drive, 0.5));
+    OI.driverB.whileTrue(new MoveWheelToAngle(drive, -0.5));
+    OI.driverY.whileTrue(new AutonomousIntake(magIntake, 1));
+    OI.driverRT.whileTrue(new Intake(magIntake));
+    OI.driverLT.whileTrue(new Outtake(magIntake));
+    OI.driverView.whileTrue(new ZeroNavx(drive));
+    OI.driverX.onTrue(new AutonomousBalance(drive, peripherals));
   }
 
   /** This function is called periodically during operator control. */

@@ -3,6 +3,11 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.subsystems;
+
+import java.lang.ModuleLayer.Controller;
+
+import org.littletonrobotics.junction.Logger;
+
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
@@ -14,9 +19,12 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.OI;
 import frc.robot.commands.defaults.MagIntakeDefault;
 import frc.robot.tools.PneumaticsControl;
 
@@ -24,7 +32,7 @@ public class MagIntake extends SubsystemBase {
   /** Creates a new MagIntake. */
 
   private final PneumaticsControl pneumatics;
-
+  private double startTime, vibrateTime = 0.5;
   //declare and initialize motors
   private final TalonFX backMagazine = new TalonFX(15, "Canivore");
   private final TalonFX frontMagazine = new TalonFX(14, "Canivore");
@@ -41,6 +49,7 @@ public class MagIntake extends SubsystemBase {
   private TalonFXConfiguration intakeMotorConfigs = new TalonFXConfiguration();
   private MotorOutputConfigs intakeMotorMotorOutputConfigs = new MotorOutputConfigs();
 
+  private Logger logger = Logger.getInstance();
   public MagIntake(PneumaticsControl pneumatics) {
     this.pneumatics = pneumatics;
   }
@@ -237,7 +246,31 @@ public void setFrontMagazine(double percent) {
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
+    // logging motor current and voltage
+    logger.recordOutput("intakeMotorSupply", intakeMotor.getSupplyCurrent().getValue());
+    logger.recordOutput("intakeMotorStator", intakeMotor.getSupplyCurrent().getValue());
+    logger.recordOutput("intakeMotorVoltage", intakeMotor.getSupplyVoltage().getValue());
+    logger.recordOutput("frontMagMotorSupply", frontMagazine.getSupplyCurrent().getValue());
+    logger.recordOutput("frontMagMotorStator", frontMagazine.getSupplyCurrent().getValue());
+    logger.recordOutput("frontMagMotorVoltage", frontMagazine.getSupplyVoltage().getValue());
+    logger.recordOutput("backMagMotorSupply", backMagazine.getSupplyCurrent().getValue());
+    logger.recordOutput("backMagMotorStator", backMagazine.getSupplyCurrent().getValue());
+    logger.recordOutput("backMagMotorVoltage", backMagazine.getSupplyVoltage().getValue());
+    // log beam breaks
+    logger.recordOutput("Lower Back Beam Break", getLowerBackBeamBreak());
+    logger.recordOutput("Upper Beam Break", getUpperBeamBreak());
+    // vibrate controller after intaking a cube
+    if (!getLowerBackBeamBreak()){
+      if (startTime == 0){
+        startTime = Timer.getFPGATimestamp();
+      }
+      if (Timer.getFPGATimestamp()-startTime>vibrateTime){
+        OI.driverController.setRumble(RumbleType.kBothRumble, 1);
+        OI.operatorController.setRumble(RumbleType.kBothRumble, 1);
+      }
+    } else {
+      startTime = 0;
+    }
   }
 
 }
