@@ -675,5 +675,39 @@ public class Drive extends SubsystemBase {
     // SmartDashboard.putNumber("Fused X", getFusedOdometryX());
     // SmartDashboard.putNumber("Fused Y", getFusedOdometryY());
     // SmartDashboard.putNumber("Fused Angle", getFusedOdometryTheta());
+    
+    // Log Angle Motor Current and Voltage
+    logger.recordOutput("frontLeftAngleMotorSupply", frontLeftAngleMotor.getSupplyCurrent().getValue());
+    logger.recordOutput("frontLeftAngleMotorStator", frontLeftAngleMotor.getSupplyCurrent().getValue());
+    logger.recordOutput("frontLeftAngleMotorVoltage", frontLeftAngleMotor.getSupplyVoltage().getValue());
+    logger.recordOutput("frontRightAngleMotorSupply", frontRightAngleMotor.getSupplyCurrent().getValue());
+    logger.recordOutput("frontRightAngleMotorStator", frontRightAngleMotor.getSupplyCurrent().getValue());
+    logger.recordOutput("frontRightAngleMotorVoltage", frontRightAngleMotor.getSupplyVoltage().getValue());
+    logger.recordOutput("backLeftAngleMotorSupply", backLeftAngleMotor.getSupplyCurrent().getValue());
+    logger.recordOutput("backLeftAngleMotorStator", backLeftAngleMotor.getSupplyCurrent().getValue());
+    logger.recordOutput("backLeftAngleMotorVoltage", backLeftAngleMotor.getSupplyVoltage().getValue());
+    logger.recordOutput("backRightAngleMotorSupply", backRightAngleMotor.getSupplyCurrent().getValue());
+    logger.recordOutput("backRightAngleMotorStator", backRightAngleMotor.getSupplyCurrent().getValue());
+    logger.recordOutput("backRightAngleMotorVoltage", backRightAngleMotor.getSupplyVoltage().getValue());
+
+    // Log Drive Motor Current and Voltage
+    logger.recordOutput("frontLeftDriveMotorSupply", frontLeftDriveMotor.getSupplyCurrent().getValue());
+    logger.recordOutput("frontLeftDriveMotorStator", frontLeftDriveMotor.getSupplyCurrent().getValue());
+    logger.recordOutput("frontLeftDriveMotorVoltage", frontLeftDriveMotor.getSupplyVoltage().getValue());
+    logger.recordOutput("frontRightDriveMotorSupply", frontRightDriveMotor.getSupplyCurrent().getValue());
+    logger.recordOutput("frontRightDriveMotorStator", frontRightDriveMotor.getSupplyCurrent().getValue());
+    logger.recordOutput("frontRightDriveMotorVoltage", frontRightDriveMotor.getSupplyVoltage().getValue());
+    logger.recordOutput("backLeftDriveMotorSupply", backLeftDriveMotor.getSupplyCurrent().getValue());
+    logger.recordOutput("backLeftDriveMotorStator", backLeftDriveMotor.getSupplyCurrent().getValue());
+    logger.recordOutput("backLeftDriveMotorVoltage", backLeftDriveMotor.getSupplyVoltage().getValue());
+    logger.recordOutput("backRightDriveMotorSupply", backRightDriveMotor.getSupplyCurrent().getValue());
+    logger.recordOutput("backRightDriveMotorStator", backRightDriveMotor.getSupplyCurrent().getValue());
+    logger.recordOutput("backRightDriveMotorVoltage", backRightDriveMotor.getSupplyVoltage().getValue());
+
+    // Log CANCoder Voltage
+    logger.recordOutput("frontLeftCANCoderVoltage", frontLeftCanCoder.getSupplyVoltage().getValue());
+    logger.recordOutput("backLeftCANCoderVoltage", backLeftCanCoder.getSupplyVoltage().getValue());
+    logger.recordOutput("frontRightCANCoderVoltage", frontRightCanCoder.getSupplyVoltage().getValue());
+    logger.recordOutput("backRightCANCoderVoltage", backRightCanCoder.getSupplyVoltage().getValue());
   }
 }
