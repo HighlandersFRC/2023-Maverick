@@ -203,6 +203,10 @@ public class MagIntake extends SubsystemBase {
     frontMagazine.set(0.0);
   }
 
+  public boolean hasCube(){
+    return(frontMagazine.getStatorCurrent().getValue() > 0 && frontMagazine.getStatorCurrent().getValue() < 35);
+  }
+
   public void moveMagazine() {  
       if(!getUpperBeamBreak()){
         stopMagazine();
@@ -260,17 +264,6 @@ public void setFrontMagazine(double percent) {
     logger.recordOutput("Lower Back Beam Break", getLowerBackBeamBreak());
     logger.recordOutput("Upper Beam Break", getUpperBeamBreak());
     // vibrate controller after intaking a cube
-    if (!getLowerBackBeamBreak()){
-      if (startTime == 0){
-        startTime = Timer.getFPGATimestamp();
-      }
-      if (Timer.getFPGATimestamp()-startTime>vibrateTime){
-        OI.driverController.setRumble(RumbleType.kBothRumble, 1);
-        OI.operatorController.setRumble(RumbleType.kBothRumble, 1);
-      }
-    } else {
-      startTime = 0;
-    }
   }
 
 }

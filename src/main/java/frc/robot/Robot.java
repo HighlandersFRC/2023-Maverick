@@ -216,7 +216,7 @@ public class Robot extends LoggedRobot {
 
     OI.driverA.whileTrue(new MoveWheelToAngle(drive, 0.5));
     OI.driverB.whileTrue(new MoveWheelToAngle(drive, -0.5));
-    OI.driverY.whileTrue(new AutonomousIntake(magIntake, 1));
+    OI.driverY.whileTrue(new AutonomousRotate(drive, 30));
     OI.driverRT.whileTrue(new Intake(magIntake));
     OI.driverLT.whileTrue(new Outtake(magIntake));
     OI.driverView.whileTrue(new ZeroNavx(drive));
