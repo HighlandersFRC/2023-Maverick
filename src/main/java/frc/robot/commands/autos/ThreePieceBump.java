@@ -23,11 +23,11 @@ import frc.robot.tools.PathAuto;
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class ThreePieceBump extends PathAuto {
-  private String part1Path = "/home/lvuser/deploy/1PieceDockMaverickPart1.json";
+  private String part1Path = "/home/lvuser/deploy/3PieceBumpMaverickPart1.json";
   private JSONArray part1JSON;
   private JSONObject part1Read;
 
-  private String part2Path = "/home/lvuser/deploy/1PieceDockMaverickPart2.json";
+  private String part2Path = "/home/lvuser/deploy/3PieceBumpMaverickPart2.json";
   private JSONArray part2JSON;
   private JSONObject part2Read;
 
