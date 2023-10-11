@@ -194,11 +194,11 @@ public class Drive extends SubsystemBase {
     yPID.setMinOutput(-4.9);
     yPID.setMaxOutput(4.9);
 
-    // thetaPID.setMinOutput(-(Constants.TOP_SPEED)/(Constants.ROBOT_RADIUS));
-    // thetaPID.setMaxOutput((Constants.TOP_SPEED)/(Constants.ROBOT_RADIUS));
+    thetaPID.setMinOutput(-(Constants.TOP_SPEED)/(Constants.ROBOT_RADIUS));
+    thetaPID.setMaxOutput((Constants.TOP_SPEED)/(Constants.ROBOT_RADIUS));
 
-    thetaPID.setMinOutput(-0.6);
-    thetaPID.setMaxOutput(0.6);
+    // thetaPID.setMinOutput(-0.6);
+    // thetaPID.setMaxOutput(0.6);
 
     setDefaultCommand(new DriveDefault(this));
   }
@@ -608,7 +608,8 @@ public class Drive extends SubsystemBase {
 
         double xVel = feedForwardX + xVelNoFF;
         double yVel = feedForwardY + yVelNoFF;
-        double thetaVel = feedForwardTheta + thetaVelNoFF;
+        // double thetaVel = feedForwardTheta + thetaVelNoFF;
+        double thetaVel = thetaVelNoFF;
 
         double[] velocityArray = new double[3];
 

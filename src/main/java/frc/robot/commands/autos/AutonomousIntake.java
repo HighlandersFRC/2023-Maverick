@@ -37,7 +37,7 @@ public class AutonomousIntake extends CommandBase {
   public void execute() {
     if ((Timer.getFPGATimestamp()-start)>delay){
       mi.setFrontMagazine(0.5);
-      mi.setIntakePercent(0.5);
+      mi.setIntakePercent(0.7);
     }
     System.out.println("Intaking" + (Timer.getFPGATimestamp()-start));
   }

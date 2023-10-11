@@ -13,6 +13,7 @@ import org.json.JSONTokener;
 
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.commands.AutonomousFollower;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.MagIntake;
@@ -43,7 +44,10 @@ public class ThreePieceBump extends PathAuto {
       new AutonomousOuttake(magIntake, 1),
       new ParallelCommandGroup(
         new AutonomousFollower(drive, part1JSON, true),
-        new AutonomousIntake(magIntake, 8)
+        new SequentialCommandGroup(
+          new WaitCommand(1.75),
+          new AutonomousIntake(magIntake, 1.75)
+        )
       ),
       new AutonomousOuttake(magIntake, 1)
     );
