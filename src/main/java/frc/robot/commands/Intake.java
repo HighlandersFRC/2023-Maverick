@@ -18,7 +18,7 @@ public class Intake extends CommandBase {
   /** Creates a new Outtake. */
   MagIntake mi;
   double start, delay = 0.5;
-  double startTime, vibrateTime = 2;
+  double startTime, vibrateTime = 0.8;
   Lights lights;
   Logger logger = Logger.getInstance();
   public Intake(MagIntake mi, Lights lights) {
@@ -46,18 +46,17 @@ public class Intake extends CommandBase {
     }
     System.out.println("Intaking" + (Timer.getFPGATimestamp()-start));
     if (mi.hasCube()){
-      if (startTime == 0){
-        startTime = Timer.getFPGATimestamp();
-      }
-      if (Timer.getFPGATimestamp()-startTime>vibrateTime){
+      // if (startTime == 0){
+      //   startTime = Timer.getFPGATimestamp();
+      // }
+      // if (Timer.getFPGATimestamp()-startTime>vibrateTime){
         OI.driverController.setRumble(RumbleType.kBothRumble, 0.5);
         OI.operatorController.setRumble(RumbleType.kBothRumble, 0.5);
         lights.setMode(LEDMode.COLOR1STROBE);
-      } else {
-        OI.driverController.setRumble(RumbleType.kBothRumble, 0);
-        OI.operatorController.setRumble(RumbleType.kBothRumble, 0);
-        lights.setMode(lights.getDefaultMode());
-      }
+      // // } else {
+      //   OI.driverController.setRumble(RumbleType.kBothRumble, 0);
+      //   OI.operatorController.setRumble(RumbleType.kBothRumble, 0);
+      // }
     } else {
       startTime = 0;
       OI.driverController.setRumble(RumbleType.kBothRumble, 0);

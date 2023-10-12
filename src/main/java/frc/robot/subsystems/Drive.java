@@ -554,6 +554,7 @@ public class Drive extends SubsystemBase {
 
         if(getFieldSide() == "blue") {
           targetX = Constants.FIELD_LENGTH - targetX;
+          targetTheta = -targetTheta;
         }
 
         // if (targetTheta - currentTheta > Math.PI){
@@ -575,6 +576,7 @@ public class Drive extends SubsystemBase {
 
         if(getFieldSide() == "blue") {
           currentPointX = Constants.FIELD_LENGTH - currentPointX;
+          currentPointTheta = -currentPointTheta;
         }
 
         double feedForwardX = (targetX - currentPointX)/(targetTime - currentPointTime);
