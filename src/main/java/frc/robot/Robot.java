@@ -197,6 +197,7 @@ public class Robot extends LoggedRobot {
     this.fieldSide = sideChooser.getSelected();
     drive.setFieldSide(fieldSide);
     drive.autoInit(this.pathJSON, this.fieldSide);
+    lights.autoInit(fieldSide);
     logger.recordOutput("pathJSON", pathJSON.toString());
   }
 
@@ -217,10 +218,8 @@ public class Robot extends LoggedRobot {
     OI.driverA.whileTrue(new MoveWheelToAngle(drive, 0.5));
     OI.driverB.whileTrue(new MoveWheelToAngle(drive, -0.5));
     OI.driverY.whileTrue(new AutonomousRotate(drive, 30));
-    OI.driverRT.whileTrue(new Intake(magIntake));
+    OI.driverRT.whileTrue(new Intake(magIntake, lights));
     OI.driverLT.whileTrue(new Outtake(magIntake));
-    // OI.operatorRT.whileTrue(new Intake(magIntake));
-    // OI.operatorLT.whileTrue(new Outtake(magIntake));
     OI.driverView.whileTrue(new ZeroNavx(drive));
     OI.driverX.onTrue(new AutonomousBalance(drive, peripherals));
   }
