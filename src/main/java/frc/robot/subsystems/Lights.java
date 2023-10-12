@@ -11,6 +11,7 @@ public class Lights extends SubsystemBase {
   private PWM ledPWM2;
   private double currentLedMode;
   private int counter;
+  private String fieldSide;
 
   public Lights() {
     ledPWM = new PWM(1);
@@ -36,7 +37,7 @@ public class Lights extends SubsystemBase {
   }
   
   public enum LEDMode{
-    BLUE(0.87), RED(0.61), GREEN(0.75), YELLOW(0.67), RAINBOW(-0.97), OFF(0.99), ORANGE(0.65), REDFLASH(-0.11), VIOLET(0.91), REDONBLUE(0.53), BLUEONRED(0.41), WHITE(0.93);
+    BLUE(0.87), RED(0.61), GREEN(0.75), YELLOW(0.67), RAINBOW(-0.99), OFF(0.99), ORANGE(0.65), REDFLASH(-0.11), VIOLET(0.91), REDONBLUE(0.53), BLUEONRED(0.41), WHITE(0.93), COLOR1STROBE(0.15), COLOR2STROBE(0.35);
 
     public final double value;
     private LEDMode(double value){
@@ -53,11 +54,24 @@ public class Lights extends SubsystemBase {
     setDefaultCommand(new LightsDefault(this));
   }
 
-  public void autoInit() {
-
+  public void autoInit(String fieldSide) {
+    this.fieldSide = fieldSide;
+  }
+  
+  public String getFieldSide(){
+    return fieldSide;
   }
 
   public void teleopInit() {
     setDefaultCommand(new LightsDefault(this));
+  }
+  public LEDMode getDefaultMode(){
+    if (fieldSide == "red"){
+      return LEDMode.RED;
+    } else if (fieldSide == "blue"){
+      return LEDMode.BLUE;
+    } else {
+      return LEDMode.RAINBOW;
+    }
   }
 }

@@ -26,7 +26,7 @@ public class LightsDefault extends CommandBase {
     if (Timer.getFPGATimestamp() - startTime > 0.5){
       startTime = Timer.getFPGATimestamp();
       // lights.switchAmericaLights();
-      lights.setMode(LEDMode.BLUE);
+      lights.setMode(lights.getDefaultMode());
     }
   }
 

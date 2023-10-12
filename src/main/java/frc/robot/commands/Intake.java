@@ -10,19 +10,22 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.OI;
+import frc.robot.subsystems.Lights;
 import frc.robot.subsystems.MagIntake;
+import frc.robot.subsystems.Lights.LEDMode;
 
 public class Intake extends CommandBase {
   /** Creates a new Outtake. */
   MagIntake mi;
   double start, delay = 0.5;
   double startTime, vibrateTime = 2;
-
+  Lights lights;
   Logger logger = Logger.getInstance();
-  public Intake(MagIntake mi) {
+  public Intake(MagIntake mi, Lights lights) {
     // Seconds = -1 if you don't want it to stop after some amount of time
     this.mi = mi;
-    addRequirements(mi);
+    this.lights = lights;
+    addRequirements(mi, lights);
   }
 
   // Called when the command is initially scheduled.
@@ -49,14 +52,17 @@ public class Intake extends CommandBase {
       if (Timer.getFPGATimestamp()-startTime>vibrateTime){
         OI.driverController.setRumble(RumbleType.kBothRumble, 0.5);
         OI.operatorController.setRumble(RumbleType.kBothRumble, 0.5);
+        lights.setMode(LEDMode.COLOR1STROBE);
       } else {
         OI.driverController.setRumble(RumbleType.kBothRumble, 0);
         OI.operatorController.setRumble(RumbleType.kBothRumble, 0);
+        lights.setMode(lights.getDefaultMode());
       }
     } else {
       startTime = 0;
       OI.driverController.setRumble(RumbleType.kBothRumble, 0);
       OI.operatorController.setRumble(RumbleType.kBothRumble, 0);
+      lights.setMode(lights.getDefaultMode());
     }
   }
 
