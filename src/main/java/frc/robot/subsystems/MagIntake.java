@@ -204,7 +204,7 @@ public class MagIntake extends SubsystemBase {
   }
 
   public boolean hasCube(){
-    return(frontMagazine.getRotorVelocity().getValue() > 0 && frontMagazine.getRotorVelocity().getValue() < 35);
+    return(frontMagazine.getRotorVelocity().getValue() < 0 && frontMagazine.getRotorVelocity().getValue() > -40);
   }
 
   public void moveMagazine() {  
@@ -254,12 +254,15 @@ public void setFrontMagazine(double percent) {
     logger.recordOutput("intakeMotorSupply", intakeMotor.getSupplyCurrent().getValue());
     logger.recordOutput("intakeMotorStator", intakeMotor.getSupplyCurrent().getValue());
     logger.recordOutput("intakeMotorVoltage", intakeMotor.getSupplyVoltage().getValue());
+    logger.recordOutput("intakeMotorVelocity", intakeMotor.getRotorVelocity().getValue());
     logger.recordOutput("frontMagMotorSupply", frontMagazine.getSupplyCurrent().getValue());
     logger.recordOutput("frontMagMotorStator", frontMagazine.getSupplyCurrent().getValue());
     logger.recordOutput("frontMagMotorVoltage", frontMagazine.getSupplyVoltage().getValue());
+    logger.recordOutput("frontMagMotorVelocity", frontMagazine.getRotorVelocity().getValue());
     logger.recordOutput("backMagMotorSupply", backMagazine.getSupplyCurrent().getValue());
     logger.recordOutput("backMagMotorStator", backMagazine.getSupplyCurrent().getValue());
     logger.recordOutput("backMagMotorVoltage", backMagazine.getSupplyVoltage().getValue());
+    logger.recordOutput("backMagMotorVelocity", backMagazine.getRotorVelocity().getValue());
     // log beam breaks
     logger.recordOutput("Lower Back Beam Break", getLowerBackBeamBreak());
     logger.recordOutput("Upper Beam Break", getUpperBeamBreak());
