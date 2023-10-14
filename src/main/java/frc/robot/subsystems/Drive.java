@@ -108,7 +108,7 @@ public class Drive extends SubsystemBase {
   private PID yPID = new PID(yP, yI, yD);
   private PID thetaPID = new PID(thetaP, thetaI, thetaD);
 
-  private String fieldSide = "blue";
+  private String fieldSide = "blue", auto = "One Piece Dock";
 
   private int lookAheadDistance = 5;
   
@@ -203,11 +203,13 @@ public class Drive extends SubsystemBase {
     setDefaultCommand(new DriveDefault(this));
   }
 
-  public void autoInit(JSONArray pathPoints, String fieldSide){
+  public void autoInit(JSONArray pathPoints, String fieldSide, String auto){
     JSONArray firstPoint = pathPoints.getJSONArray(0);
     double firstPointX = firstPoint.getDouble(1);
     double firstPointY = firstPoint.getDouble(2);
     this.fieldSide = fieldSide;
+    this.auto = auto;
+    
     // double firstPointAngle = firstPoint.getDouble(3);
     double firstPointAngle = 0.0;
     SmartDashboard.putNumber("1x", firstPointX);
@@ -550,6 +552,7 @@ public class Drive extends SubsystemBase {
             targetX = Constants.FIELD_LENGTH - targetX;
             targetY = Constants.FIELD_WIDTH - targetY;
             // targetTheta = Math.PI - targetTheta;
+            if (auto == "One Piece Dock") targetTheta = -targetTheta;
         }
 
         if(getFieldSide() == "blue") {
@@ -572,6 +575,7 @@ public class Drive extends SubsystemBase {
             currentPointX = Constants.FIELD_LENGTH - currentPointX;
             currentPointY = Constants.FIELD_WIDTH - currentPointY;
             // currentPointTheta = Math.PI - currentPointTheta;
+            if (auto == "One Piece Dock") currentPointTheta = -currentPointTheta;
         }
 
         if(getFieldSide() == "blue") {

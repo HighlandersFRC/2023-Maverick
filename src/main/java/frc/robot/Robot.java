@@ -66,7 +66,7 @@ public class Robot extends LoggedRobot {
   JSONObject pathRead;
   JSONArray pathJSON;
 
-  String fieldSide;
+  String fieldSide, autoString;
   SendableChooser<String> sideChooser = new SendableChooser<>();
 
   PathAuto auto;
@@ -193,10 +193,11 @@ public class Robot extends LoggedRobot {
     // schedule the autonomous command (example)
     this.auto = autoChooser.getSelected();
     auto.schedule();
+    this.autoString = auto.getName();
     this.pathJSON = auto.getStartingPath();
     this.fieldSide = sideChooser.getSelected();
     drive.setFieldSide(fieldSide);
-    drive.autoInit(this.pathJSON, this.fieldSide);
+    drive.autoInit(this.pathJSON, this.fieldSide, this.autoString);
     lights.autoInit(fieldSide);
     logger.recordOutput("pathJSON", pathJSON.toString());
   }

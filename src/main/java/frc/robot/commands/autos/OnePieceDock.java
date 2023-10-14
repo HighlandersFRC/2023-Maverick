@@ -51,4 +51,8 @@ public class OnePieceDock extends PathAuto {
   public JSONArray getStartingPath(){
     return part1JSON;
   }
+  @Override
+  public String getName(){
+    return "One Piece Dock";
+  }
 }
