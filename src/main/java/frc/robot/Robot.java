@@ -37,6 +37,7 @@ import frc.robot.commands.autos.MoveForwardAuto;
 import frc.robot.commands.autos.OnePieceDock;
 import frc.robot.commands.autos.ThreePieceBump;
 import frc.robot.commands.autos.ThreePieceFeeder;
+import frc.robot.commands.autos.outakeAndExit;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Hood;
 import frc.robot.subsystems.Lights;
@@ -99,6 +100,7 @@ public class Robot extends LoggedRobot {
     autoChooser.addOption("3 Piece Bump", new ThreePieceBump(drive, peripherals, magIntake));
     autoChooser.addOption("Test Auto", new MoveForwardAuto(drive, peripherals));
     autoChooser.addOption("Outtake", new AutonomousOuttake(magIntake, 2));
+    autoChooser.addOption("Outtake and Exit", new outakeAndExit(magIntake, drive));
     SmartDashboard.putData(autoChooser);
 
     sideChooser.setDefaultOption("Blue", "blue");
