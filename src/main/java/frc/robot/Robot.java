@@ -25,6 +25,8 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.IntakeBalls;
 import frc.robot.commands.MoveWheelToAngle;
 import frc.robot.commands.Outtake;
+import frc.robot.commands.Shoot;
+import frc.robot.commands.FireBallsNoVision;
 import frc.robot.commands.Intake;
 import frc.robot.commands.ZeroNavx;
 import frc.robot.commands.autos.AutonomousBalance;
@@ -36,9 +38,11 @@ import frc.robot.commands.autos.OnePieceDock;
 import frc.robot.commands.autos.ThreePieceBump;
 import frc.robot.commands.autos.ThreePieceFeeder;
 import frc.robot.subsystems.Drive;
+import frc.robot.subsystems.Hood;
 import frc.robot.subsystems.Lights;
 import frc.robot.subsystems.MagIntake;
 import frc.robot.subsystems.Peripherals;
+import frc.robot.subsystems.Shooter;
 import frc.robot.tools.PathAuto;
 import frc.robot.tools.PneumaticsControl;
 
@@ -52,13 +56,15 @@ public class Robot extends LoggedRobot {
   private PathAuto m_autonomousCommand;
 
   private RobotContainer m_robotContainer;
-  private SendableChooser<PathAuto> autoChooser = new SendableChooser<>();
+  private SendableChooser<Command> autoChooser = new SendableChooser<>();
   public Peripherals peripherals = new Peripherals();
   public Drive drive = new Drive(peripherals);
   private Logger logger = Logger.getInstance();
   private PneumaticsControl pneumatics = new PneumaticsControl();
   private MagIntake magIntake = new MagIntake(pneumatics);
   private Lights lights = new Lights();
+  private Shooter shooter = new Shooter(peripherals);
+  private Hood hood = new Hood(peripherals);
 
   File pathingFile;
   String pathString;
@@ -69,7 +75,7 @@ public class Robot extends LoggedRobot {
   String fieldSide, autoString;
   SendableChooser<String> sideChooser = new SendableChooser<>();
 
-  PathAuto auto;
+  Command auto;
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -82,6 +88,8 @@ public class Robot extends LoggedRobot {
 
     drive.init();
     peripherals.init();
+    hood.init();
+    shooter.init();
     logger.addDataReceiver(new WPILOGWriter("/home/lvuser/logs/mostRecent.wpilog"));
     logger.addDataReceiver(new NT4Publisher());
     logger.start();
@@ -90,6 +98,7 @@ public class Robot extends LoggedRobot {
     autoChooser.addOption("3 Piece Feeder", new ThreePieceFeeder(drive, magIntake, peripherals));
     autoChooser.addOption("3 Piece Bump", new ThreePieceBump(drive, peripherals, magIntake));
     autoChooser.addOption("Test Auto", new MoveForwardAuto(drive, peripherals));
+    autoChooser.addOption("Outtake", new AutonomousOuttake(magIntake, 2));
     SmartDashboard.putData(autoChooser);
 
     sideChooser.setDefaultOption("Blue", "blue");
@@ -129,6 +138,7 @@ public class Robot extends LoggedRobot {
     logger.recordOutput("fieldSide", fieldSide);
     // Logging Compressor Current
     logger.recordOutput("Compressor Current", pneumatics.getCompressorCurrent());
+    SmartDashboard.putNumber("Hood Position", hood.getSensorPosition());
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
@@ -193,13 +203,13 @@ public class Robot extends LoggedRobot {
     // schedule the autonomous command (example)
     this.auto = autoChooser.getSelected();
     auto.schedule();
-    this.autoString = auto.getName();
-    this.pathJSON = auto.getStartingPath();
+    // this.autoString = auto.getName();
+    // this.pathJSON = auto.getStartingPath();
     this.fieldSide = sideChooser.getSelected();
     drive.setFieldSide(fieldSide);
-    drive.autoInit(this.pathJSON, this.fieldSide, this.autoString);
+    // drive.autoInit(this.pathJSON, this.fieldSide, this.autoString);
     lights.autoInit(fieldSide);
-    logger.recordOutput("pathJSON", pathJSON.toString());
+    // logger.recordOutput("pathJSON", pathJSON.toString());
   }
 
   /** This function is called periodically during autonomous. */
@@ -219,10 +229,11 @@ public class Robot extends LoggedRobot {
     OI.driverA.whileTrue(new MoveWheelToAngle(drive, 0.5));
     OI.driverB.whileTrue(new MoveWheelToAngle(drive, -0.5));
     OI.driverY.whileTrue(new AutonomousRotate(drive, 30));
-    OI.operatorRT.whileTrue(new Intake(magIntake, lights));
-    OI.operatorLT.whileTrue(new Outtake(magIntake));
+    OI.driverRT.whileTrue(new Intake(magIntake, lights));
+    OI.driverLT.whileTrue(new Outtake(magIntake));
     OI.driverView.whileTrue(new ZeroNavx(drive));
     OI.driverX.onTrue(new AutonomousBalance(drive, peripherals));
+    OI.operatorA.whileTrue(new Shoot(shooter, magIntake));
   }
 
   /** This function is called periodically during operator control. */

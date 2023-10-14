@@ -35,8 +35,8 @@ public class Outtake extends CommandBase {
   @Override
   public void execute() {
     if (Timer.getFPGATimestamp()-start>delay){
-      mi.setFrontMagazine(-0.5);
-      mi.setIntakePercent(-0.5);
+      mi.setFrontMagazine(-0.3);
+      mi.setIntakePercent(-0.3);
     }
     System.out.println("Outtaking" + (Timer.getFPGATimestamp()-start));
   }

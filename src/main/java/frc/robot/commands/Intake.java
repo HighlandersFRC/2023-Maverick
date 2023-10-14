@@ -50,8 +50,8 @@ public class Intake extends CommandBase {
       //   startTime = Timer.getFPGATimestamp();
       // }
       // if (Timer.getFPGATimestamp()-startTime>vibrateTime){
-        OI.driverController.setRumble(RumbleType.kBothRumble, 0.5);
-        OI.operatorController.setRumble(RumbleType.kBothRumble, 0.5);
+        OI.driverController.setRumble(RumbleType.kBothRumble, 1);
+        OI.operatorController.setRumble(RumbleType.kBothRumble, 1);
         lights.setMode(LEDMode.COLOR1STROBE);
       // // } else {
       //   OI.driverController.setRumble(RumbleType.kBothRumble, 0);

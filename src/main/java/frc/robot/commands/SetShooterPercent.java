@@ -4,35 +4,29 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.MagIntake;
+import frc.robot.subsystems.Shooter;
 
-public class SetBackMagSpeed extends CommandBase {
-  /** Creates a new SetBackMagSpeed. */
-  private MagIntake magIntake;
-  private double rpm = 0;
-  private Boolean ends;
-  private double percent;
-  public SetBackMagSpeed(MagIntake magIntake, double percent, Boolean doesEnd) {
-    this.magIntake = magIntake;
-    this.rpm = rpm;
-    ends = doesEnd;
-    this.percent = percent;
-    addRequirements(this.magIntake);
+public class SetShooterPercent extends CommandBase {
+  /** Creates a new SetShooterPercent. */
+  Shooter shooter;
+  double percent;
+  public SetShooterPercent(Shooter shooter, double percent) {
     // Use addRequirements() here to declare subsystem dependencies.
+    this.percent = percent;
+    this.shooter = shooter;
+    addRequirements(shooter);
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    shooter.setShooterPercent(percent);
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {
-    magIntake.setBackMagazine(percent);
-    magIntake.setFrontMagazine(percent);
-  }
+  public void execute() {}
 
   // Called once the command ends or is interrupted.
   @Override
@@ -41,6 +35,6 @@ public class SetBackMagSpeed extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return ends;
+    return true;
   }
 }

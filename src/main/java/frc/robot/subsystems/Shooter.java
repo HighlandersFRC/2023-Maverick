@@ -53,7 +53,7 @@ public class Shooter extends SubsystemBase {
     leftShooterConfigurator.apply(leftShooterConfiguration);
     rightShooterConfigurator.apply(rightShooterConfiguration);
 
-    setDefaultCommand(new ShooterDefault(this, peripherals));
+    // setDefaultCommand(new ShooterDefault(this, peripherals));
   }
 
   public double getNumRPMValues(double[] rpmArray) {

@@ -8,6 +8,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.controls.PositionDutyCycle;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.ReverseLimitSourceValue;
 import com.ctre.phoenix6.signals.ReverseLimitTypeValue;
 
@@ -36,7 +37,7 @@ public class Hood extends SubsystemBase {
     hoodConfiguration.Slot0.kP = 0.19;
     hoodConfiguration.Slot0.kI = 0.00002;
     hoodConfiguration.Slot0.kD = 1;
-
+    hoodConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     hoodConfiguration.TorqueCurrent.PeakForwardTorqueCurrent = 65;
     hoodConfiguration.TorqueCurrent.PeakReverseTorqueCurrent = -65;
     

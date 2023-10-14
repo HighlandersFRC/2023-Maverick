@@ -4,12 +4,14 @@
 
 package frc.robot.commands.autos;
 
+import org.json.JSONArray;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.OI;
 import frc.robot.subsystems.MagIntake;
+import frc.robot.tools.PathAuto;
 
 public class AutonomousOuttake extends CommandBase {
   /** Creates a new Outtake. */
