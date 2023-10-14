@@ -490,7 +490,7 @@ public class Drive extends SubsystemBase {
 
     double finalX = adjustedX * Constants.TOP_SPEED;
     double finalY = adjustedY * Constants.TOP_SPEED;
-    double turn = 0.6 * (rightStick * Constants.TOP_SPEED);
+    double turn = 0.4 * (rightStick * Constants.TOP_SPEED);
 
     Vector controllerVector = new Vector(finalX, finalY);
     // controllerVector.i = finalX;
