@@ -90,6 +90,7 @@ public class Robot extends LoggedRobot {
     m_robotContainer = new RobotContainer();
 
     drive.init();
+    lights.init();
     peripherals.init();
     hood.init();
     shooter.init();
@@ -104,7 +105,7 @@ public class Robot extends LoggedRobot {
     autoChooser.addOption("Outtake", new AutonomousOuttake(magIntake, 2));
     autoChooser.addOption("Outtake and Exit", new outakeAndExit(magIntake, drive));
     SmartDashboard.putData(autoChooser);
-
+    
     sideChooser.setDefaultOption("Blue", "blue");
     sideChooser.addOption("Red", "red");
     SmartDashboard.putData(sideChooser);
