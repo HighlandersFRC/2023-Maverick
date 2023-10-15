@@ -2,31 +2,31 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands.autos;
+package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Drive;
+import frc.robot.subsystems.Peripherals;
 
-public class AutonomousRotate extends CommandBase {
-  Drive drive;
+public class SetNavxValue extends CommandBase {
+  Peripherals peripherals;
   double angle;
-  /** Creates a new AutonomousRotate. */
-  public AutonomousRotate(Drive drive, double angle) {
-    this.drive = drive;
+  /** Creates a new SetNavxValue. */
+  public SetNavxValue(Peripherals peripherals, double angle) {
+    this.peripherals = peripherals;
     this.angle = angle;
-    addRequirements(drive);
+    addRequirements(peripherals);
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    peripherals.setNavxAngle(angle);
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {
-    drive.drive(0, 0, 0.2);
-  }
+  public void execute() {}
 
   // Called once the command ends or is interrupted.
   @Override
@@ -35,10 +35,6 @@ public class AutonomousRotate extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if (Math.abs(drive.getNavxAngle() - angle) < 5){
-      return true;
-    } else {
-      return false;
-    }
+    return true;
   }
 }

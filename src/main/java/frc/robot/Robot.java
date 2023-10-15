@@ -25,7 +25,9 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.IntakeBalls;
 import frc.robot.commands.MoveWheelToAngle;
 import frc.robot.commands.Outtake;
-import frc.robot.commands.Shoot;
+import frc.robot.commands.ShootHigh;
+import frc.robot.commands.ShootIntoCommunity;
+import frc.robot.commands.ShootMid;
 import frc.robot.commands.FireBallsNoVision;
 import frc.robot.commands.Intake;
 import frc.robot.commands.ZeroNavx;
@@ -95,7 +97,7 @@ public class Robot extends LoggedRobot {
     logger.addDataReceiver(new NT4Publisher());
     logger.start();
 
-    autoChooser.setDefaultOption("One Piece Dock", new OnePieceDock(drive, peripherals, magIntake));
+    autoChooser.setDefaultOption("One Piece Dock", new OnePieceDock(drive, shooter,  peripherals, magIntake));
     autoChooser.addOption("3 Piece Feeder", new ThreePieceFeeder(drive, magIntake, peripherals));
     autoChooser.addOption("3 Piece Bump", new ThreePieceBump(drive, peripherals, magIntake));
     autoChooser.addOption("Test Auto", new MoveForwardAuto(drive, peripherals));
@@ -230,12 +232,14 @@ public class Robot extends LoggedRobot {
 
     OI.driverA.whileTrue(new MoveWheelToAngle(drive, 0.5));
     OI.driverB.whileTrue(new MoveWheelToAngle(drive, -0.5));
-    OI.driverY.whileTrue(new AutonomousRotate(drive, 30));
+    OI.driverY.onTrue(new AutonomousRotate(drive, 90));
     OI.driverRT.whileTrue(new Intake(magIntake, lights));
     OI.driverLT.whileTrue(new Outtake(magIntake));
     OI.driverView.whileTrue(new ZeroNavx(drive));
     OI.driverX.onTrue(new AutonomousBalance(drive, peripherals));
-    OI.operatorA.whileTrue(new Shoot(shooter, magIntake));
+    OI.operatorA.whileTrue(new ShootIntoCommunity(shooter, magIntake));
+    OI.operatorX.whileTrue(new ShootMid(shooter, magIntake));
+    OI.operatorY.whileTrue(new ShootHigh(shooter, magIntake));
   }
 
   /** This function is called periodically during operator control. */

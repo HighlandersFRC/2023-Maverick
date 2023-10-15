@@ -100,9 +100,9 @@ public class Drive extends SubsystemBase {
   private double yI = 0.0;
   private double yD = 0.5;
 
-  private double thetaP = 2.5;
+  private double thetaP = 1.0;
   private double thetaI = 0.0;
-  private double thetaD = 0.3;
+  private double thetaD = 0.0;
 
   private PID xPID = new PID(xP, xI, xD);
   private PID yPID = new PID(yP, yI, yD);
@@ -194,11 +194,11 @@ public class Drive extends SubsystemBase {
     yPID.setMinOutput(-4.9);
     yPID.setMaxOutput(4.9);
 
-    thetaPID.setMinOutput(-(Constants.TOP_SPEED)/(Constants.ROBOT_RADIUS));
-    thetaPID.setMaxOutput((Constants.TOP_SPEED)/(Constants.ROBOT_RADIUS));
+    // thetaPID.setMinOutput(-(Constants.TOP_SPEED)/(Constants.ROBOT_RADIUS));
+    // thetaPID.setMaxOutput((Constants.TOP_SPEED)/(Constants.ROBOT_RADIUS));
 
-    // thetaPID.setMinOutput(-0.6);
-    // thetaPID.setMaxOutput(0.6);
+    thetaPID.setMinOutput(-0.4);
+    thetaPID.setMaxOutput(0.4);
 
     setDefaultCommand(new DriveDefault(this));
   }
@@ -461,7 +461,7 @@ public class Drive extends SubsystemBase {
   public void autoTurn(double angle){
       thetaPID.updatePID(getNavxAngle());
       thetaPID.setSetPoint(angle);
-      double thetaVel = -thetaPID.getResult();
+      double thetaVel = thetaPID.getResult();
 
       Vector vector = new Vector(0.0, 0.0);
       

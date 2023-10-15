@@ -9,11 +9,11 @@ import frc.robot.OI;
 import frc.robot.subsystems.MagIntake;
 import frc.robot.subsystems.Shooter;
 
-public class Shoot extends CommandBase {
+public class ShootIntoCommunity extends CommandBase {
   /** Creates a new Shoot. */
   Shooter shooter;
   MagIntake magIntake;  
-  public Shoot(Shooter shooter, MagIntake magIntake) {
+  public ShootIntoCommunity(Shooter shooter, MagIntake magIntake) {
     this.magIntake = magIntake;
     this.shooter = shooter;
     // Use addRequirements() here to declare subsystem dependencies.
@@ -23,7 +23,7 @@ public class Shoot extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    shooter.setShooterPercent(0.15);
+    shooter.setShooterPercent(0.4);
     magIntake.setBackMagazine(0.3);
     magIntake.setFrontMagazine(0.3);
   }
