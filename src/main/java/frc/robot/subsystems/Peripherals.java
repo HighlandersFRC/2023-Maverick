@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.hardware.Pigeon2;
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.wpilibj.SPI.Port;
@@ -19,8 +20,11 @@ public class Peripherals extends SubsystemBase {
 
   public final static Navx navx = new Navx(ahrs);
 
+  private Pigeon2 pigeon = new Pigeon2(0, "Canivore");
+
   public void init(){
     zeroNavx();
+    zeroPigeon();
   }
 
   public double getNavxAngle() {
@@ -68,9 +72,113 @@ public class Peripherals extends SubsystemBase {
     return navx.getAngleRate();
   }
 
+  //pigeon
+  double pitchOffset = getRawPitch();
+  double rollOffset = getRawRoll();
+
+  public void zeroPigeon(){
+    setYaw(0.0);
+  }
+
+  public void setYaw(double degrees){
+    pigeon.setYaw(degrees);
+  }
+
+  public double getYaw(){
+    return pigeon.getYaw().getValue();
+  }
+
+  public void setPitch(double degrees){
+    pitchOffset = degrees-getRawPitch();
+  }
+
+  public double getRawPitch(){
+    return pigeon.getPitch().getValue();
+  }
+
+  public double getPitch(){
+    return pigeon.getPitch().getValue()+pitchOffset;
+  }
+
+  public void setRoll(double degrees){
+    pitchOffset = degrees-getRawRoll();
+  }
+
+  public double getRawRoll(){
+    return pigeon.getRoll().getValue();
+  }
+
+  public double getRoll(){
+    return pigeon.getRoll().getValue()+rollOffset;
+  }
+
+  public double getZAcceleration(){
+    return pigeon.getAccelerationZ().getValue();
+  }
+
+  public double getXAcceleration(){
+    return pigeon.getAccelerationX().getValue();
+  }
+
+  public double getYAcceleration(){
+    return pigeon.getAccelerationY().getValue();
+  }
+
+  public double getZAccumulation(){
+    return pigeon.getAccumGyroZ().getValue();
+  }
+
+  public double getXAccumulation(){
+    return pigeon.getAccumGyroX().getValue();
+  }
+
+  public double getYAccumulation(){
+    return pigeon.getAccumGyroY().getValue();
+  }
+
+  public double getYawVelocity(){
+    return pigeon.getAngularVelocityZ().getValue();
+  }
+
+  public double getPitchVelocity(){
+    return pigeon.getAngularVelocityY().getValue();
+  }
+
+  public double getRollVelocity(){
+    return pigeon.getAngularVelocityX().getValue();
+  }
+
+  public double getGravityVectorX(){
+    return pigeon.getGravityVectorX().getValue();
+  }
+
+  public double getGravityVectorY(){
+    return pigeon.getGravityVectorY().getValue();
+  }
+
+  public double getGravityVectorZ(){
+    return pigeon.getGravityVectorZ().getValue();
+  }
+
+  public double getMagneticFieldX(){
+    return pigeon.getMagneticFieldX().getValue();
+  }
+
+  public double getMagneticFieldY(){
+    return pigeon.getMagneticFieldY().getValue();
+  }
+
+  public double getMagneticFieldZ(){
+    return pigeon.getMagneticFieldZ().getValue();
+  }
+
+
   @Override
   public void periodic() {
     SmartDashboard.putNumber("Roll", getNavxRoll());
+    SmartDashboard.putNumber("Pigeon Yaw", getYaw());
+    SmartDashboard.putNumber("Pigeon Pitch", getPitch());
+    SmartDashboard.putNumber("Pigeon Roll", getRoll());
     // SmartDashboard.putNumber("Pitch", navx.currentPitch());
     navx.currentPitch();
     // This method will be called once per scheduler run

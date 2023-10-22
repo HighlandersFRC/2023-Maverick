@@ -138,6 +138,10 @@ public class Drive extends SubsystemBase {
     m_odometry.resetPosition(new Rotation2d(peripherals.getNavxAngle()), swerveModulePositions, new Pose2d(new Translation2d(getFusedOdometryX(), getFusedOdometryY()), new Rotation2d(peripherals.getNavxAngle())));
   }
 
+  public void zeroPigeon(){
+    peripherals.zeroPigeon();
+  }
+
   public void setNavxAfterAuto() {
     peripherals.setNavxAngle((peripherals.getNavxAngle() + 180)%360);
   }
@@ -500,7 +504,8 @@ public class Drive extends SubsystemBase {
     // SmartDashboard.putNumber("Joystick Y", finalY);
     // SmartDashboard.putNumber("Joystick X", finalX);
     // SmartDashboard.putNumber("Right Joystick", turn);
-    double navxAngle = Math.toRadians(peripherals.getNavxAngle());
+    // double navxAngle = Math.toRadians(peripherals.getNavxAngle());
+    double navxAngle = Math.toRadians(peripherals.getYaw());
 
     backRight.drive(controllerVector, turn, navxAngle);
     backLeft.drive(controllerVector, turn, navxAngle);

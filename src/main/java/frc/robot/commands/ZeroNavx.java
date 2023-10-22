@@ -24,6 +24,7 @@ public class ZeroNavx extends CommandBase {
   @Override
   public void execute() {
     drive.zeroNavx();
+    drive.zeroPigeon();
   }
 
   // Called once the command ends or is interrupted.
