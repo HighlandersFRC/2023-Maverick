@@ -4,6 +4,9 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.configs.MountPoseConfigs;
+import com.ctre.phoenix6.configs.Pigeon2Configuration;
+import com.ctre.phoenix6.configs.Pigeon2Configurator;
 import com.ctre.phoenix6.hardware.Pigeon2;
 import com.kauailabs.navx.frc.AHRS;
 
@@ -22,9 +25,16 @@ public class Peripherals extends SubsystemBase {
 
   private Pigeon2 pigeon = new Pigeon2(0, "Canivore");
 
+  private Pigeon2Configuration pigeonConfig = new Pigeon2Configuration();
+
   public void init(){
-    zeroNavx();
-    zeroPigeon();
+    // values from pigeon calibration in phoenix tuner
+    pigeonConfig.MountPose.MountPosePitch = 85.20455932617188;
+    pigeonConfig.MountPose.MountPoseRoll = 131.78761291503906;
+    pigeonConfig.MountPose.MountPoseYaw = 5.973172187805176;
+    pigeon.getConfigurator().apply(pigeonConfig);
+    // zeroNavx();
+    zeroPigeon();  
   }
 
   public double getNavxAngle() {

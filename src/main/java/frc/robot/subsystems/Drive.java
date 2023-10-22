@@ -126,6 +126,7 @@ public class Drive extends SubsystemBase {
     Pose2d m_pose = new Pose2d();
 
     m_odometry = new SwerveDrivePoseEstimator(m_kinematics, new Rotation2d(peripherals.getNavxAngle()), swerveModulePositions, m_pose);
+    // m_odometry.resetPosition(new Rotation2d(peripherals.getNavxAngle()), swerveModulePositions, new Pose2d(new Translation2d(getFusedOdometryX(), getFusedOdometryY()), new Rotation2d(peripherals.getNavxAngle())));
   }
 
   public void zeroNavx(){
@@ -177,6 +178,8 @@ public class Drive extends SubsystemBase {
   }
 
   public void init(){
+    zeroNavx();
+    
     frontRight.init();
     frontLeft.init();
     backRight.init();
