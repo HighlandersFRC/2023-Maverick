@@ -25,6 +25,7 @@ import frc.robot.tools.Vector;
 import frc.robot.commands.DriveDefault;
 
 public class Drive extends SubsystemBase {
+  // creating motors, cancoders, and swerve modules
   private final TalonFX frontRightDriveMotor = new TalonFX(1, "Canivore");
   private final TalonFX frontRightAngleMotor = new TalonFX(2, "Canivore");
   private final TalonFX frontLeftDriveMotor = new TalonFX(3, "Canivore");
@@ -46,6 +47,7 @@ public class Drive extends SubsystemBase {
 
   Peripherals peripherals;
 
+  // values used for swerve module positions (odometry)
   private final double moduleX = ((Constants.ROBOT_LENGTH)/2) - Constants.SWERVE_MODULE_OFFSET;
   private final double moduleY = ((Constants.ROBOT_WIDTH)/2) - Constants.SWERVE_MODULE_OFFSET;
 
@@ -53,7 +55,8 @@ public class Drive extends SubsystemBase {
   Translation2d m_frontRightLocation = new Translation2d(moduleX, -moduleY);
   Translation2d m_backLeftLocation = new Translation2d(-moduleX, moduleY);
   Translation2d m_backRightLocation = new Translation2d(-moduleX, -moduleY);
-
+ 
+  // odometry
   private double currentX = 0;
   private double currentY = 0;
   private double currentTheta = 0;
@@ -79,8 +82,10 @@ public class Drive extends SubsystemBase {
   private double previousY = 0;
   private double previousTheta = 0;
 
+  // array for odometry
   private double[] currentFusedOdometry = new double[3];
 
+  // kinematics object for module locations
   SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
   m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation, m_backRightLocation
   );
@@ -92,6 +97,7 @@ public class Drive extends SubsystemBase {
   double setAngle;
   double diffAngle;
 
+  // path following pid values
   private double xP = 1.0;
   private double xI = 0.0;
   private double xD = 0.5;
@@ -108,15 +114,18 @@ public class Drive extends SubsystemBase {
   private PID yPID = new PID(yP, yI, yD);
   private PID thetaPID = new PID(thetaP, thetaI, thetaD);
 
+  // field side logic
   private String fieldSide = "blue", auto = "One Piece Dock";
 
   private int lookAheadDistance = 5;
   
+  // AdvantageKit Logging
   private Logger logger = Logger.getInstance();
   /** Creates a new SwerveDriveSubsystem. */
   public Drive(Peripherals peripherals) {
     this.peripherals = peripherals;
 
+    // Making swerve module positions object
     SwerveModulePosition[] swerveModulePositions = new SwerveModulePosition[4];
     swerveModulePositions[0] = new SwerveModulePosition(0, new Rotation2d(frontLeft.getCanCoderPositionRadians()));
     swerveModulePositions[1] = new SwerveModulePosition(0, new Rotation2d(frontRight.getCanCoderPositionRadians()));
@@ -125,18 +134,21 @@ public class Drive extends SubsystemBase {
 
     Pose2d m_pose = new Pose2d();
 
-    m_odometry = new SwerveDrivePoseEstimator(m_kinematics, new Rotation2d(peripherals.getNavxAngle()), swerveModulePositions, m_pose);
-    // m_odometry.resetPosition(new Rotation2d(peripherals.getNavxAngle()), swerveModulePositions, new Pose2d(new Translation2d(getFusedOdometryX(), getFusedOdometryY()), new Rotation2d(peripherals.getNavxAngle())));
+    // setting odometry equal to positions, kinematics, and gyro
+    m_odometry = new SwerveDrivePoseEstimator(m_kinematics, new Rotation2d(peripherals.getYaw()), swerveModulePositions, m_pose);
   }
 
-  public void zeroNavx(){
-    peripherals.zeroNavx();
+  public void zeroIMU(){
+    // sets IMU to 0
+    peripherals.zeroPigeon();
+
+    // resets odometry with zeroed value
     SwerveModulePosition[] swerveModulePositions = new SwerveModulePosition[4];
     swerveModulePositions[0] = new SwerveModulePosition(frontLeft.getModuleDistance(), new Rotation2d(frontLeft.getCanCoderPositionRadians()));
     swerveModulePositions[1] = new SwerveModulePosition(frontRight.getModuleDistance(), new Rotation2d(frontRight.getCanCoderPositionRadians()));
     swerveModulePositions[2] = new SwerveModulePosition(backLeft.getModuleDistance(), new Rotation2d(backLeft.getCanCoderPositionRadians()));
     swerveModulePositions[3] = new SwerveModulePosition(backRight.getModuleDistance(), new Rotation2d(backRight.getCanCoderPositionRadians()));
-    m_odometry.resetPosition(new Rotation2d(peripherals.getNavxAngle()), swerveModulePositions, new Pose2d(new Translation2d(getFusedOdometryX(), getFusedOdometryY()), new Rotation2d(peripherals.getNavxAngle())));
+    m_odometry.resetPosition(new Rotation2d(peripherals.getYaw()), swerveModulePositions, new Pose2d(new Translation2d(getFusedOdometryX(), getFusedOdometryY()), new Rotation2d(peripherals.getYaw())));
   }
 
   public void zeroPigeon(){
@@ -163,6 +175,11 @@ public class Drive extends SubsystemBase {
     return peripherals.getNavxRoll();
   }
 
+  public double getPigeonAngle(){
+    return peripherals.getYaw();
+  }
+
+  // methods to set wheels to a specific angle or orientation
   public void lockWheels(){
     frontRight.setWheelPID((Math.PI / 4), 0.0);
     frontLeft.setWheelPID(((3 * Math.PI) / 4), 0.0);
@@ -177,14 +194,16 @@ public class Drive extends SubsystemBase {
     backRight.setWheelPID(0, 0.0);
   }
 
+  // method run on robot initialization
   public void init(){
-    zeroNavx();
+    // zeroNavx();
     
     frontRight.init();
     frontLeft.init();
     backRight.init();
     backLeft.init();
 
+    // makes sure motors aren't inverted so the correct direction is positive
     frontRightAngleMotor.setInverted(false);
     frontLeftAngleMotor.setInverted(false);
     backRightAngleMotor.setInverted(false);
@@ -195,6 +214,7 @@ public class Drive extends SubsystemBase {
     backRightDriveMotor.setInverted(false);
     backLeftDriveMotor.setInverted(false);
 
+    // path following pid outputs
     xPID.setMinOutput(-4.9);
     xPID.setMaxOutput(4.9);
 
@@ -210,7 +230,9 @@ public class Drive extends SubsystemBase {
     setDefaultCommand(new DriveDefault(this));
   }
 
+  // method run at the start of autonomous
   public void autoInit(JSONArray pathPoints, String fieldSide, String auto){
+    // gets first point x, y, and theta to set odometry
     JSONArray firstPoint = pathPoints.getJSONArray(0);
     double firstPointX = firstPoint.getDouble(1);
     double firstPointY = firstPoint.getDouble(2);
@@ -223,30 +245,7 @@ public class Drive extends SubsystemBase {
     SmartDashboard.putNumber("1y", firstPointY);
     SmartDashboard.putNumber("1angle", firstPointAngle);
     
-    // JSONArray secondPoint = pathPoints.getJSONArray(0);
-    // double secondPointX = secondPoint.getDouble(4);
-    // double secondPointY = secondPoint.getDouble(5);
-    // double secondPointAngle = secondPoint.getDouble(6);
-    // SmartDashboard.putNumber("2x", secondPointX);
-    // SmartDashboard.putNumber("2y", secondPointY);
-    // SmartDashboard.putNumber("2angle", secondPointAngle);
-
-    // JSONArray thirdPoint = pathPoints.getJSONArray(2);
-    // double thirdPointX = thirdPoint.getDouble(1);
-    // double thirdPointY = thirdPoint.getDouble(2);
-    // double thirdPointAngle = thirdPoint.getDouble(3);
-    // SmartDashboard.putNumber("3x", thirdPointX);
-    // SmartDashboard.putNumber("3y", thirdPointY);
-    // SmartDashboard.putNumber("3angle", thirdPointAngle);
-
-    // JSONArray fourthPoint = pathPoints.getJSONArray(3);
-    // double fourthPointX = fourthPoint.getDouble(1);
-    // double fourthPointY = fourthPoint.getDouble(2);
-    // double fourthPointAngle = fourthPoint.getDouble(3);
-    // SmartDashboard.putNumber("4x", fourthPointX);
-    // SmartDashboard.putNumber("4y", fourthPointY);
-    // SmartDashboard.putNumber("4angle", fourthPointAngle);
-
+    // field side logic
     if(getFieldSide() == "red") {
       firstPointX = Constants.FIELD_LENGTH - firstPointX;
       firstPointY = Constants.FIELD_WIDTH - firstPointY;
@@ -257,7 +256,9 @@ public class Drive extends SubsystemBase {
       firstPointX = Constants.FIELD_LENGTH - firstPointX;
     }
         
-    peripherals.setNavxAngle(Math.toDegrees(firstPointAngle));
+
+    // sets odometry to the first point values
+    peripherals.setYaw(Math.toDegrees(firstPointAngle));
     SwerveModulePosition[] swerveModulePositions = new SwerveModulePosition[4];
     swerveModulePositions[0] = new SwerveModulePosition(frontLeft.getModuleDistance(), new Rotation2d(frontLeft.getCanCoderPositionRadians()));
     swerveModulePositions[1] = new SwerveModulePosition(frontRight.getModuleDistance(), new Rotation2d(frontRight.getCanCoderPositionRadians()));
@@ -303,8 +304,9 @@ public class Drive extends SubsystemBase {
     return currentTime;
   }
 
+  // method to update odometry
   public void updateOdometryFusedArray(){
-    double navxOffset = Math.toRadians(peripherals.getNavxAngle());
+    double navxOffset = Math.toRadians(peripherals.getYaw());
 
     // Matrix<N3, N1> stdDeviation = new Matrix<>(Nat.N3(), Nat.N1());
 
@@ -351,6 +353,7 @@ public class Drive extends SubsystemBase {
     frontLeft.setDrivePID(value);    
   }
 
+  // methods to get module states and setpoints for Advantage Scope logging
   public double[] getModuleStates(){
     double[] states = {
       frontRight.getCanCoderPosition() * 360.0, frontRight.getGroundSpeed(),
@@ -378,6 +381,7 @@ public class Drive extends SubsystemBase {
     return velocity;
   }
 
+  // methods to get odometry values
   public double[] getOdometry(){
     double[] odometry = {
       getOdometryX(), getOdometryY(), getOdometryAngle()
@@ -455,6 +459,7 @@ public class Drive extends SubsystemBase {
   //   return number;
   // }
 
+  // adjust x and y joystick values
   public double adjustX(double originalX, double originalY){
     double adjustedX = originalX * Math.sqrt((1-(Math.pow(originalY, 2))/2));
     return adjustedX;
@@ -465,17 +470,18 @@ public class Drive extends SubsystemBase {
     return adjustedY;
   }
 
+  // used to rotate in auto
   public void autoTurn(double angle){
-      thetaPID.updatePID(getNavxAngle());
+      thetaPID.updatePID(peripherals.getYaw());
       thetaPID.setSetPoint(angle);
       double thetaVel = thetaPID.getResult();
 
       Vector vector = new Vector(0.0, 0.0);
       
-      frontLeft.drive(vector, thetaVel, getNavxAngle());
-      frontRight.drive(vector, thetaVel, getNavxAngle());
-      backLeft.drive(vector, thetaVel, getNavxAngle());
-      backRight.drive(vector, thetaVel, getNavxAngle());
+      frontLeft.drive(vector, thetaVel, peripherals.getYaw());
+      frontRight.drive(vector, thetaVel, peripherals.getYaw());
+      backLeft.drive(vector, thetaVel, peripherals.getYaw());
+      backRight.drive(vector, thetaVel, peripherals.getYaw());
   }
 
   public void autoRobotCentricDrive(Vector stopVector, double turnRadiansPerSec){
@@ -486,6 +492,7 @@ public class Drive extends SubsystemBase {
     backRight.drive(stopVector, turnRadiansPerSec, 0);
   }
 
+  // teleOperated drive method
   public void drive(double forwardStrafe, double sidewaysStrafe, double turnAmount){
     updateOdometryFusedArray();
 
@@ -500,6 +507,7 @@ public class Drive extends SubsystemBase {
     double finalY = adjustedY * Constants.TOP_SPEED;
     double turn = 0.4 * (rightStick * Constants.TOP_SPEED);
 
+    // gets controller values and makes a vector
     Vector controllerVector = new Vector(finalX, finalY);
     // controllerVector.i = finalX;
     // controllerVector.j = finalY;
@@ -510,16 +518,18 @@ public class Drive extends SubsystemBase {
     // double navxAngle = Math.toRadians(peripherals.getNavxAngle());
     double navxAngle = Math.toRadians(peripherals.getYaw());
 
+    // passes vector, turn amount, and navx value into swerve module class
     backRight.drive(controllerVector, turn, navxAngle);
     backLeft.drive(controllerVector, turn, navxAngle);
     frontLeft.drive(controllerVector, turn, navxAngle);
     frontRight.drive(controllerVector, turn, navxAngle);
   }
 
+  // method 
   public void autoDrive(Vector vector, double turnRadiansPerSec){
     updateOdometryFusedArray();
 
-    double navxOffset = Math.toRadians(peripherals.getNavxAngle());
+    double navxOffset = Math.toRadians(peripherals.getYaw());
 
     frontLeft.drive(vector, turnRadiansPerSec, navxOffset);
     frontRight.drive(vector, turnRadiansPerSec, navxOffset);

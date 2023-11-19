@@ -21,7 +21,7 @@ public class SetNavxValue extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    peripherals.setNavxAngle(angle);
+    peripherals.setYaw(angle);
   }
 
   // Called every time the scheduler runs while the command is scheduled.

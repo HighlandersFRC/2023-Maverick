@@ -30,7 +30,7 @@ import frc.robot.commands.ShootIntoCommunity;
 import frc.robot.commands.ShootMid;
 import frc.robot.commands.FireBallsNoVision;
 import frc.robot.commands.Intake;
-import frc.robot.commands.ZeroNavx;
+import frc.robot.commands.ZeroIMU;
 import frc.robot.commands.autos.AutonomousBalance;
 import frc.robot.commands.autos.AutonomousIntake;
 import frc.robot.commands.autos.AutonomousOuttake;
@@ -236,7 +236,7 @@ public class Robot extends LoggedRobot {
     OI.driverY.onTrue(new AutonomousRotate(drive, 90));
     OI.driverRT.whileTrue(new Intake(magIntake, lights));
     OI.driverLT.whileTrue(new Outtake(magIntake));
-    OI.driverView.whileTrue(new ZeroNavx(drive));
+    OI.driverView.whileTrue(new ZeroIMU(drive));
     OI.driverX.onTrue(new AutonomousBalance(drive, peripherals));
     OI.operatorA.whileTrue(new ShootIntoCommunity(shooter, magIntake));
     OI.operatorX.whileTrue(new ShootMid(shooter, magIntake));

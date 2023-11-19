@@ -6,7 +6,7 @@ package frc.robot.commands.autos;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.AutonomousDrive;
-import frc.robot.commands.ZeroNavx;
+import frc.robot.commands.ZeroIMU;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.MagIntake;
 import frc.robot.tools.Vector;
@@ -26,7 +26,7 @@ public class outakeAndExit extends SequentialCommandGroup {
     this.drive = drive;
     addRequirements(magIntake, drive);
     addCommands(
-      new ZeroNavx(drive),
+      new ZeroIMU(drive),
       new AutonomousOuttake(magIntake, 2),
       new AutonomousDrive(drive, vector, 3.5)
     );
